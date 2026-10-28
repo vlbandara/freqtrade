@@ -1,0 +1,93 @@
+#### 1. Locked carry harvest
+== CARRY locked  (entries=0)
+      ret  cagr  sharpe  sortino  maxdd  pf_daily     days  turn/d  expo
+IS  0.464 0.135   3.018    1.611 -0.063     3.098 1096.000   0.000 0.000
+VAL 0.024 0.024   3.229    4.441 -0.005     1.991  365.000   0.000 0.000
+OOS 0.081 0.057   6.752   10.831 -0.007     4.845  516.000   0.000 0.000
+== CARRY at 2x fees+slippage  (entries=0)
+       ret   cagr  sharpe  sortino  maxdd  pf_daily     days  turn/d  expo
+IS   0.214  0.067   1.420    0.848 -0.097     1.645 1096.000   0.000 0.000
+VAL -0.023 -0.023  -2.263   -1.916 -0.038     0.618  365.000   0.000 0.000
+OOS  0.039  0.028   2.768    2.569 -0.026     1.778  516.000   0.000 0.000
+== CARRY at 3x fees+slippage  (entries=0)
+       ret   cagr  sharpe  sortino  maxdd  pf_daily     days  turn/d  expo
+IS   0.007  0.002   0.072    0.046 -0.143     1.025 1096.000   0.000 0.000
+VAL -0.068 -0.068  -4.904   -3.833 -0.079     0.304  365.000   0.000 0.000
+OOS -0.001 -0.001  -0.063   -0.049 -0.049     0.986  516.000   0.000 0.000
+
+round trips (entries): total 1033, OOS 127; coins traded 149
+avg holding (h): 537.6
+
+#### 2. Calendar years + components
+         net   basis  funding    fees  avg_deployed
+date                                               
+2020  0.1433  0.0180   0.2070 -0.0905        0.8184
+2021  0.2760 -0.0670   0.4044 -0.0873        0.8394
+2022  0.0033  0.0022   0.0101 -0.0090        0.1294
+2023  0.0244  0.0106   0.0607 -0.0470        0.4450
+2024  0.0778  0.0049   0.1067 -0.0366        0.5826
+2025  0.0032  0.0011   0.0051 -0.0030        0.1229
+
+#### 3. Concentration: top coins by contribution (OOS)
+ARB_USDT_USDT     0.0044
+APT_USDT_USDT     0.0043
+ETH_USDT_USDT     0.0039
+FIL_USDT_USDT     0.0037
+OP_USDT_USDT      0.0037
+ADA_USDT_USDT     0.0037
+FET_USDT_USDT     0.0036
+WIF_USDT_USDT     0.0034
+WLD_USDT_USDT     0.0034
+LINK_USDT_USDT    0.0033
+total 0.1178; share of top-3 coins 11%
+OOS gross contribution excluding top-3 coins: 0.1052
+
+#### 4. Plateau around every parameter (IS / VAL / OOS Sharpe and CAGR)
+    k_days  thr_in  top_k  IS_sh  IS_cagr  VAL_sh  VAL_cagr  OOS_sh  OOS_cagr
+0        1     0.0      5 -0.529   -0.027  -8.571    -0.141  -9.148    -0.202
+1        1     0.0     10 -0.709   -0.033 -10.232    -0.158  -9.221    -0.163
+2        1     0.0     20 -0.461   -0.020 -11.750    -0.143  -6.231    -0.077
+3        1     0.0      5  2.387    0.111   0.553     0.004   4.763     0.044
+4        1     0.0     10  2.616    0.114   1.782     0.012   5.732     0.049
+5        1     0.0     20  2.716    0.112   3.424     0.018   6.665     0.053
+6        1     0.0      5  2.414    0.113   0.819     0.006   4.096     0.037
+7        1     0.0     10  2.690    0.117   1.978     0.011   5.055     0.042
+8        1     0.0     20  2.767    0.115   3.713     0.018   5.842     0.044
+9        3     0.0      5  1.658    0.078  -3.712    -0.044  -3.032    -0.047
+10       3     0.0     10  1.567    0.071  -4.056    -0.042  -1.528    -0.019
+11       3     0.0     20  1.816    0.077  -3.085    -0.027   1.418     0.014
+12       3     0.0      5  3.006    0.140   2.401     0.020   6.067     0.056
+13       3     0.0     10  3.018    0.135   3.229     0.024   6.752     0.057
+14       3     0.0     20  2.997    0.128   4.633     0.028   7.277     0.058
+15       3     0.0      5  2.839    0.136   4.157     0.024   4.685     0.045
+16       3     0.0     10  2.809    0.131   4.776     0.026   5.458     0.045
+17       3     0.0     20  2.905    0.124   5.884     0.028   6.328     0.049
+18       7     0.0      5  2.267    0.116   0.606     0.005   2.327     0.028
+19       7     0.0     10  2.641    0.115   0.871     0.007   4.287     0.043
+20       7     0.0     20  2.807    0.116   2.428     0.018   5.766     0.050
+21       7     0.0      5  2.558    0.140   3.964     0.032   6.809     0.064
+22       7     0.0     10  3.127    0.140   4.601     0.033   7.492     0.062
+23       7     0.0     20  3.150    0.133   5.447     0.032   8.020     0.063
+24       7     0.0      5  2.268    0.134   4.536     0.026   5.395     0.049
+25       7     0.0     10  2.789    0.136   5.048     0.023   5.831     0.048
+26       7     0.0     20  2.809    0.124   5.495     0.022   6.304     0.047
+IS: profitable 89%, Sharpe median 2.69 min -0.71
+VAL: profitable 78%, Sharpe median 2.43 min -11.75
+OOS: profitable 81%, Sharpe median 5.46 min -9.22
+
+#### 5. Leverage: gross hedged notional per unit of capital
+1x: IS CAGR 13.5% DD -6.3%  VAL CAGR 2.4% DD -0.5%  OOS CAGR 5.7% DD -0.7%
+2x: IS CAGR 28.3% DD -13.0%  VAL CAGR 4.9% DD -1.0%  OOS CAGR 11.7% DD -1.5%
+3x: IS CAGR 44.1% DD -20.2%  VAL CAGR 7.4% DD -1.6%  OOS CAGR 18.0% DD -2.2%
+worst 1h basis moves on held coins:
+ SUSHI_USDT_USDT   -0.9303
+1INCH_USDT_USDT   -0.7272
+HOT_USDT_USDT     -0.4046
+BCH_USDT_USDT     -0.3672
+XLM_USDT_USDT     -0.3501
+largest 24h pump on a held short-perp leg (margin stress):
+ DOGE_USDT_USDT     1.881
+SUSHI_USDT_USDT    1.253
+XLM_USDT_USDT      1.014
+SAND_USDT_USDT     0.985
+MKR_USDT_USDT      0.793

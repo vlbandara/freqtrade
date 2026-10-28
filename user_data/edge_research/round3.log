@@ -1,0 +1,36 @@
+{'name': 'M_basis_contra_h8', 'IS_sharpe': np.float64(1.91), 'IS_cagr': np.float64(0.506), 'IS_maxdd': np.float64(-0.341), 'VAL_sharpe': np.float64(-0.352), 'VAL_cagr': np.float64(-0.08), 'VAL_maxdd': np.float64(-0.291), 'turn/d': np.float64(2.615)}
+{'name': 'M_basis_contra_h24', 'IS_sharpe': np.float64(2.923), 'IS_cagr': np.float64(0.954), 'IS_maxdd': np.float64(-0.154), 'VAL_sharpe': np.float64(-0.224), 'VAL_cagr': np.float64(-0.058), 'VAL_maxdd': np.float64(-0.253), 'turn/d': np.float64(1.249)}
+{'name': 'M_basis_contra_h72', 'IS_sharpe': np.float64(3.218), 'IS_cagr': np.float64(1.152), 'IS_maxdd': np.float64(-0.188), 'VAL_sharpe': np.float64(0.942), 'VAL_cagr': np.float64(0.173), 'VAL_maxdd': np.float64(-0.197), 'turn/d': np.float64(0.595)}
+{'name': 'M_basis_minus_fund', 'IS_sharpe': np.float64(2.975), 'IS_cagr': np.float64(0.979), 'IS_maxdd': np.float64(-0.158), 'VAL_sharpe': np.float64(-0.292), 'VAL_cagr': np.float64(-0.071), 'VAL_maxdd': np.float64(-0.24), 'turn/d': np.float64(1.279)}
+IS hour-of-day mean return (bps):
+ date    0     1     2     3     4      5   ...    18    19    20    21    22    23
+btc   1.05  0.22 -6.41 -4.42  0.06   3.22  ... -0.80 -0.44  2.32  4.12  0.24 -0.74
+ew    3.19 -0.14 -5.02 -8.06  4.81  11.14  ... -4.54 -3.75  1.90  4.49 -0.50  4.19
+
+[2 rows x 24 columns]
+best hours [5, 6, 7, 10, 13, 15] worst hours [2, 3, 12, 14, 17, 18]
+/home/user/freqtrade/user_data/edge_research/screen_round3.py:63: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  ewU = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0.0)
+{'name': 'N_hour_long_best6', 'IS_sharpe': np.float64(-1.363), 'IS_cagr': np.float64(-0.573), 'IS_maxdd': np.float64(-0.925), 'VAL_sharpe': np.float64(-8.249), 'VAL_cagr': np.float64(-0.926), 'VAL_maxdd': np.float64(-0.931), 'turn/d': np.float64(7.894)}
+{'name': 'N_hour_ls_best_worst', 'IS_sharpe': np.float64(-2.072), 'IS_cagr': np.float64(-0.875), 'IS_maxdd': np.float64(-0.998), 'VAL_sharpe': np.float64(-11.356), 'VAL_cagr': np.float64(-0.995), 'VAL_maxdd': np.float64(-0.995), 'turn/d': np.float64(15.786)}
+IS day-of-week mean hourly return (bps): {0: -1.14, 1: 0.96, 2: 2.33, 3: 1.44, 4: 0.37, 5: 1.49, 6: -0.02}
+{'name': 'O_fc_high_dispersion', 'IS_sharpe': np.float64(1.71), 'IS_cagr': np.float64(0.358), 'IS_maxdd': np.float64(-0.201), 'VAL_sharpe': np.float64(1.589), 'VAL_cagr': np.float64(0.249), 'VAL_maxdd': np.float64(-0.129), 'turn/d': np.float64(0.378)}
+{'name': 'O_fc_low_dispersion', 'IS_sharpe': np.float64(1.028), 'IS_cagr': np.float64(0.183), 'IS_maxdd': np.float64(-0.226), 'VAL_sharpe': np.float64(0.621), 'VAL_cagr': np.float64(0.088), 'VAL_maxdd': np.float64(-0.122), 'turn/d': np.float64(0.441)}
+{'name': 'P_fundvol_short', 'IS_sharpe': np.float64(-0.062), 'IS_cagr': np.float64(-0.049), 'IS_maxdd': np.float64(-0.422), 'VAL_sharpe': np.float64(-2.097), 'VAL_cagr': np.float64(-0.362), 'VAL_maxdd': np.float64(-0.373), 'turn/d': np.float64(0.27)}
+{'name': 'Q_wick_bias', 'IS_sharpe': np.float64(-1.238), 'IS_cagr': np.float64(-0.297), 'IS_maxdd': np.float64(-0.701), 'VAL_sharpe': np.float64(-1.597), 'VAL_cagr': np.float64(-0.297), 'VAL_maxdd': np.float64(-0.296), 'turn/d': np.float64(0.761)}
+{'name': 'Q_wick_bias_rev', 'IS_sharpe': np.float64(-0.254), 'IS_cagr': np.float64(-0.092), 'IS_maxdd': np.float64(-0.413), 'VAL_sharpe': np.float64(-0.476), 'VAL_cagr': np.float64(-0.107), 'VAL_maxdd': np.float64(-0.249), 'turn/d': np.float64(0.769)}
+                      IS_sharpe  IS_cagr  IS_maxdd  ...  VAL_cagr  VAL_maxdd  turn/d
+name                                                ...                             
+M_basis_contra_h8         1.910    0.506    -0.341  ...    -0.080     -0.291   2.615
+M_basis_contra_h24        2.923    0.954    -0.154  ...    -0.058     -0.253   1.249
+M_basis_contra_h72        3.218    1.152    -0.188  ...     0.173     -0.197   0.595
+M_basis_minus_fund        2.975    0.979    -0.158  ...    -0.071     -0.240   1.279
+N_hour_long_best6        -1.363   -0.573    -0.925  ...    -0.926     -0.931   7.894
+N_hour_ls_best_worst     -2.072   -0.875    -0.998  ...    -0.995     -0.995  15.786
+O_fc_high_dispersion      1.710    0.358    -0.201  ...     0.249     -0.129   0.378
+O_fc_low_dispersion       1.028    0.183    -0.226  ...     0.088     -0.122   0.441
+P_fundvol_short          -0.062   -0.049    -0.422  ...    -0.362     -0.373   0.270
+Q_wick_bias              -1.238   -0.297    -0.701  ...    -0.297     -0.296   0.761
+Q_wick_bias_rev          -0.254   -0.092    -0.413  ...    -0.107     -0.249   0.769
+
+[11 rows x 7 columns]
