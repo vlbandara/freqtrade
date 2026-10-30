@@ -138,3 +138,58 @@ user_data/edge_research/fetch_data.sh
 ```bash
 cd user_data/edge_research && python3 final_eval_carry.py && python3 lookahead_test.py
 ```
+
+---
+
+# Round 2: chasing a smoother, higher curve (target max DD ≤ 10%)
+
+![round-2 equity curves](equity_curves_v2.png)
+
+**Bottom line.** The best robust curve is still the funding carry harvest. Two things changed:
+1. A more realistic engine shows it is **far smoother** than round 1 reported.
+2. It can carry **modest leverage**, as long as the cost of borrowing for the spot leg is charged.
+
+| Carry harvest (same rules as round 1) | IS 2020–22 | VAL 2023 | OOS 2024-01→2025-05 | Worst DD 2021+ | Worst month |
+|---|---|---|---|---|---|
+| Round 1 engine, 1× | 13.5% / Sh 3.0 | 2.4% / Sh 3.2 | 5.7% / Sh 6.8 | −6.3% | — |
+| **v2 engine, 1×** (8% borrow APR, unused at 1×) | **21.3% / Sh 6.3** | 4.2% / Sh 4.8 | 7.4% / Sh 6.9 | **−1.8%** | −0.2% |
+| **v2 engine, 2×** (borrowing at 8% APR) | **40.3% / Sh 5.8** | 5.3% / Sh 3.1 | **11.7% / Sh 5.7** | **−3.7%** | −0.6% |
+
+Calendar years at 2×: 2021 +107%, 2022 +0.4%, 2023 +5.3%, 2024 +16.2%, 2025 (to May) +0.7%.
+
+The curve is very smooth, but it **steps**. It climbs when the market is levered up and goes flat when funding is cold. About 60–64% of months are positive, and the rest sit near zero rather than being losses.
+
+## What changed and why
+
+* **v2 engine (`carry2_lab.py`).** Holdings are now coin units that drift between trades. The round-1 engine held constant weights, which meant rebalancing every hour. That booked transient spot/perp dislocations as losses: the −6% on 19 May 2021 was an artifact. Equity now compounds, and fees are charged on the traded notional of both legs. Lookahead truncation test (`lookahead_test_v2.py`): **NO LOOKAHEAD**.
+* **Leverage has a real cost** (`leverage_v2.py`). Above 1× you must buy more spot than you have cash for, so the shortfall is borrowed (USDT margin loan) and interest is charged every hour.
+
+  | | 1× | 2× | 3× |
+  |---|---|---|---|
+  | VAL, 8% borrow | 4.2% | 5.3% | 6.1% |
+  | OOS, 8% borrow | 7.4% | 11.7% | 15.8% |
+  | VAL, 15% borrow | — | — | −0.9% |
+
+  So size leverage to the borrow rate you actually get. Above about 12% APR, stay at 1×.
+
+## What was tried and rejected in round 2 (all numbers in the logs)
+
+| Idea | Result |
+|---|---|
+| Wider universe (top 100) | Small gain in VAL; kept as an option, not needed |
+| Funding-proportional sizing | Worse (VAL Sharpe 1.8–4.8 vs 5–7) |
+| "Smart leverage": borrow only where funding APR > borrow APR + 5% | **Worse** than flat leverage, because re-sizing churn eats the extra carry (`smartlev_v2.csv`) |
+| S1 basis-spike carry | IS Sharpe 1.5–3.6, VAL 0.4–1.0 → rejected |
+| S3 large-cap pairs stat-arb | Negative everywhere → rejected |
+| **S2 liquidation-cascade reversion** (buy the most oversold alts after a market-wide 1h flush of ≥3%, hedge with BTC, exit after 6h) | IS Sharpe 2.8 / VAL 2.8, plateau positive in all 24 settings. **But:** about half the edge is in the first hour (entry 1h late: Sharpe 1.5–1.8). The freqtrade port (`strategies/EdgeHuntCascadeReversion.py`) makes +105% over 2021–25, almost all in 2021–22; 2023 −7%, 2024–25 flat. **Downgraded to experimental**, not part of the recommendation |
+| Walk-forward portfolio, carry + cascade (`final_eval_v2.py`) | 2022→2025-05: CAGR 15.5%, Sharpe 4.2, max DD −2.4%, 99th-percentile bootstrap DD −3.2%. But it ignored borrow cost, the cascade sleeve decayed (2024 +1.9%, 2025 −6.7%), positive months were only 68%, and the deflated Sharpe was 0.37. **Not adopted** |
+
+Note on freqtrade's `lookahead-analysis` for the cascade strategy: it reports "bias" because it re-runs each trade with the whitelist cut to that one pair (`freqtrade/optimize/analysis/lookahead.py:115`). That changes a cross-sectional universe, so the result is a false positive. The truncation test above keeps the full universe and is the valid check.
+
+## Data freshness
+No newer data source was found: the mirror and its fork stop at 2025-05-30, and the other candidate repos are older. So there is still **no untouched holdout** for round-2 choices. The 2024–25 period has now been seen several times, so treat its numbers as in-sample-ish for anything decided in round 2. The carry *rules* themselves were locked in round 1, before OOS.
+
+## Recommendation
+Run the carry harvest at **1×** if your USDT borrow rate is above about 12% APR, or **1.5–2×** if you can borrow at about 8% or less. Use cross or portfolio margin, maker or BNB-discount fees, and monitor funding. Expect 5–15% in normal years and much more in levered-up bull phases, with drawdowns that have stayed under 4%.
+
+`carry_signals.py 10000 2` prints the target book.
