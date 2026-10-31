@@ -1,0 +1,40 @@
+pairs starting inside the data: 417; flagged as truncated: 37
+['1000LUNC_USDT_USDT', '1000SHIB_USDT_USDT', '1000XEC_USDT_USDT', 'ADA_USDT_USDT', 'ALGO_USDT_USDT', 'BB_USDT_USDT', 'BNX_USDT_USDT', 'CHZ_USDT_USDT', 'CYBER_USDT_USDT', 'ENA_USDT_USDT', 'HIGH_USDT_USDT', 'HOOK_USDT_USDT', 'ICP_USDT_USDT', 'IO_USDT_USDT', 'LISTA_USDT_USDT', 'LUNA2_USDT_USDT', 'MEW_USDT_USDT', 'MINA_USDT_USDT', 'NOT_USDT_USDT', 'OMG_USDT_USDT', 'OMNI_USDT_USDT', 'PENDLE_USDT_USDT', 'PERP_USDT_USDT', 'POPCAT_USDT_USDT', 'RAD_USDT_USDT', 'REZ_USDT_USDT', 'RIF_USDT_USDT', 'SAGA_USDT_USDT', 'TAO_USDT_USDT', 'TLM_USDT_USDT', 'TNSR_USDT_USDT', 'TURBO_USDT_USDT', 'UNFI_USDT_USDT', 'W_USDT_USDT', 'XMR_USDT_USDT', 'ZK_USDT_USDT', 'ZRO_USDT_USDT']
+
+#### Stream A (original) P&L from truncated 'new listings', by year (sum of hourly returns)
+date
+2020   -0.0212
+2021   -0.1406
+2022    0.0154
+2023   -0.1388
+2024   -0.0584
+2025    0.0000
+2024 contribution per truncated pair:
+ MEW_USDT_USDT      -0.0198
+TURBO_USDT_USDT    -0.0136
+SAGA_USDT_USDT     -0.0114
+TAO_USDT_USDT      -0.0093
+ZRO_USDT_USDT      -0.0090
+TNSR_USDT_USDT     -0.0047
+BB_USDT_USDT       -0.0037
+NOT_USDT_USDT      -0.0032
+POPCAT_USDT_USDT   -0.0021
+ENA_USDT_USDT      -0.0012
+LISTA_USDT_USDT    -0.0001
+IO_USDT_USDT        0.0004
+REZ_USDT_USDT       0.0008
+W_USDT_USDT         0.0032
+ZK_USDT_USDT        0.0058
+OMNI_USDT_USDT      0.0095
+
+#### Locked round-3 config, original vs clean listing dates
+                                  sharpe   cagr  maxdd  days  y2022  y2023  y2024  y2025
+data           stream    split                                                          
+original       A         DESIGN    0.939  0.247 -0.213   730    NaN    NaN    NaN    NaN
+                         HOLDOUT   1.355  0.538 -0.209   516  0.276  0.220  0.326  0.386
+               PORTFOLIO DESIGN    1.590  0.145 -0.048   730    NaN    NaN    NaN    NaN
+                         HOLDOUT   1.458  0.157 -0.069   516  0.072  0.224  0.106  0.112
+clean listings A         DESIGN    0.975  0.253 -0.222   730    NaN    NaN    NaN    NaN
+                         HOLDOUT   1.450  0.574 -0.209   516  0.248  0.259  0.370  0.386
+               PORTFOLIO DESIGN    1.527  0.139 -0.049   730    NaN    NaN    NaN    NaN
+                         HOLDOUT   1.451  0.157 -0.068   516  0.066  0.217  0.106  0.112

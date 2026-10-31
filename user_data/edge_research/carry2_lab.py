@@ -81,7 +81,7 @@ def simulate(
     S = spot.reindex(index=idx, columns=cols).ffill().to_numpy()
     alive = (close.notna() & spot.reindex(index=idx, columns=cols).notna()).to_numpy()
     fund = p["funding"].reindex(index=idx, columns=cols).fillna(0).to_numpy()
-    W = w.reindex(index=idx, columns=cols).fillna(0).to_numpy()
+    W = w.reindex(index=idx, columns=cols).fillna(0).to_numpy(copy=True)
     W[~alive] = 0.0
     n, m = F.shape
     units = np.zeros(m)
