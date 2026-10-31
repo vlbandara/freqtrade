@@ -54,7 +54,7 @@ def n_eff(R: pd.DataFrame) -> float:
 
 
 def cscv(R: pd.DataFrame, S: int = 16):
-    X = R.to_numpy()
+    X = R.to_numpy(dtype=float)
     T, N = X.shape
     edges = np.linspace(0, T, S + 1).astype(int)
     s1 = np.array([X[a:b].sum(0) for a, b in zip(edges[:-1], edges[1:])])
@@ -102,7 +102,7 @@ def count_trials():
     return n
 
 
-R = pd.read_pickle(TRIALS)
+R = pd.read_pickle(TRIALS).astype(float)
 single = R[[c for c in R.columns if not c.startswith("P_")]]
 ports = R[[c for c in R.columns if c.startswith("P_")]]
 DES = slice("2022-01-01", "2023-12-31")

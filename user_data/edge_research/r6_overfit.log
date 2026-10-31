@@ -1,0 +1,38 @@
+#### 1. Trial universe (modern regime, rounds 3-4, rebuilt)
+single-stream trials: 71, effective N (correlation spectrum) = 8.4
+portfolio neighbours: 27, effective N = 1.2
+design-window Sharpe across single trials: median 0.39, sd 0.68, best 1.00 (M_pump_j0.6_h7)
+all screen CSVs in this folder (rounds 1-5): 361 rows; prior REPORT counts ~170 + ~36 + ~60
+
+#### 2. CSCV probability of backtest overfitting (2022-01..2025-05, 16 blocks)
+                       splits    PBO  median_logit  IS_best_sharpe_med  OOS_of_IS_best_sharpe_med  P(OOS_sharpe_of_IS_best<0)  degradation_slope
+single streams        12870.0  0.526         0.000               1.712                      0.431                       0.178             -0.478
+portfolio neighbours  12870.0  0.807        -0.916               1.696                      1.272                       0.000             -0.947
+everything            12870.0  0.510        -0.061               1.824                      0.748                       0.116             -0.735
+
+#### 3. PSR / DSR of the claims
+                            days  sharpe   skew    kurt  PSR(SR>0)  DSR N_eff=8  DSR N=361  SR0_ann(N_all)
+claim                                                                                                     
+carry 1x, OOS 2024-25        516   6.926  2.601  12.413      1.000        1.000      1.000            2.02
+carry 1x, 2022-25 (modern)  1246   5.142  3.333  21.051      1.000        1.000      1.000            2.02
+round-3 portfolio, holdout   515   1.447  0.988   9.818      0.962        0.702      0.241            2.02
+round-3 portfolio, 2022-25  1245   1.520  0.911  10.127      0.998        0.831      0.171            2.02
+stream A, holdout            515   1.356  0.404   6.167      0.948        0.659      0.213            2.02
+stream C, holdout            515   1.471  0.792  10.151      0.963        0.710      0.252            2.02
+stream B, holdout            515   0.096  0.252   5.854      0.546        0.138      0.011            2.02
+
+DSR: probability the true Sharpe beats the best of N skill-less trials. >0.95 = significant.
+
+#### 4. Selection-rule check: does the design-window ranking carry into the holdout?
+Spearman(design Sharpe, holdout Sharpe) over 71 trials: 0.35 (p=0.003)
+                 design  holdout
+M_pump_j0.6_h7     1.00     0.30
+M_pump_j0.6_h3     0.99     0.76
+G_shock_k3.0_h3    0.99     0.76
+M_pump_j0.5_h1     0.97    -0.26
+A_n30_skip1        0.94     1.36
+M_pump_j0.75_h1    0.91     1.72
+M_pump_j0.6_h1     0.90     0.94
+G_shock_k3.0_h1    0.90     0.95
+M_pump_j0.5_h2     0.88    -0.18
+M_pump_j0.6_h2     0.88     0.72
