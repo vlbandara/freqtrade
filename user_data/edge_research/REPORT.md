@@ -251,3 +251,54 @@ A is positive every year (2022 +27.6%, 2023 +22.0%, 2024 +32.6%, 2025 Jan–May 
 
 ## How to use it
 Run C and A as separate freqtrade bots, plus B if you want the full locked mix. Split capital roughly 65 / 12 / 21, matching the average holdout weights, or recompute the inverse-vol weights monthly. Expect about 10–20% a year with Sharpe around 1.5 and drawdowns of 7–15%, in markets like 2022–2025.
+
+---
+
+# Round 4: searching for more modern-regime strategies (result: none added)
+
+The protocol was the same as round 3: design on 2022–23 only, then open the 2024-01 → 2025-05 holdout once per new family.
+
+**Entry gate (design window):**
+- Sharpe ≥ 0.8
+- 2022 and 2023 both positive
+- positive at 2× costs
+- correlation below 0.5 to streams A, B and C
+
+## Batch 1 (`screen_modern_r4.py` → `modern_r4_screen.csv`)
+
+| Family | Idea | Design Sharpe | Verdict |
+|---|---|---|---|
+| E. Pullback in uptrend | Buy BTC/ETH/SOL/BNB/XRP dips more than k·ATR below the 20-day EMA while above the 100-day EMA | −0.5 to −0.9 | rejected |
+| F. Coin/BTC ratio trend | Donchian breakout on 8 coin/BTC ratios, market-neutral | 0.09–0.58 | rejected, and 0.5 correlated with B |
+| G. Daily shock reversal | Fade a >k·σ daily move that goes against the 50-day trend | 0.9–1.0 at k=3, negative at k=2 | rejected: only **5 trades** in 2 years |
+| H. Broad majors trend | C applied to the top 10/20 coins | 0.07–0.47 | rejected, and 0.8 correlated with C |
+| I. Young-coin short | A applied to coins aged 30–180/365 days | 0.24–0.33 | rejected, and 0.8 correlated with B |
+
+## Batch 2 (`screen_modern_r4b.py`, `screen_modern_r4c.py`)
+
+| Family | Idea | Design Sharpe | Verdict |
+|---|---|---|---|
+| J. Weekend effect | Long BTC, or short alts vs BTC, on weekends only | −0.3 / −0.4 | rejected |
+| K. Turn of month | Long BTC around month end | −0.1 to −0.3 | rejected |
+| L. Funding capitulation | Long BTC/ETH when market-wide funding is in its bottom 10–30% | about 0 | rejected |
+| M. Pump short | Short top-100 coins after a big 24h pump, BTC hedge | 20–40% pumps: −0.2 to −1.4; **≥ 50% pumps: 0.84–0.99** | passed the gate → holdout |
+
+**Holdout for M** (locked at 50% / 2 days / 5% per position; `final_eval_modern_r4.py`):
+
+| | Design | Holdout |
+|---|---|---|
+| M alone | Sharpe 0.88 · 7.2%/yr | **Sharpe −0.18 · −2.9%/yr** (2024 −7.6%) |
+| Portfolio A+B+C+M | 1.84 · 11.7%/yr | 1.17 · 9.1%/yr: **worse than round 3** (1.46 · 15.7%/yr) |
+
+**M is rejected.** The 60% and 75% thresholds stayed positive on the holdout (Sharpe 0.7–1.7). Switching to them after seeing the holdout would be selection on the answer, so they are only a *watch-list idea* for forward paper trading.
+
+## Takeaway
+About 60 more variants across 9 families produced nothing that both passed the design gate and survived the holdout. **The round-3 portfolio (A+B+C) is still the best result.**
+
+The easy price- and funding-based signals in this dataset now look exhausted. Further real edges probably need data that isn't available here:
+- open interest and liquidation feeds
+- order-book depth
+- token-unlock calendars (to sharpen stream A)
+- cross-exchange funding and basis
+- on-chain flows
+- data after 2025-05 for a genuinely fresh test

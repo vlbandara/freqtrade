@@ -1,0 +1,55 @@
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:59: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:59: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+#### 1. Stream M and portfolios: design vs holdout (holdout opened once)
+                                     sharpe   cagr  maxdd
+series                      split                        
+M pump short                DESIGN    0.882  0.072 -0.059
+                            HOLDOUT  -0.179 -0.029 -0.133
+round-3 portfolio (A+B+C)   DESIGN    1.585  0.145 -0.048
+                            HOLDOUT   1.459  0.157 -0.069
+round-4 portfolio (A+B+C+M) DESIGN    1.838  0.117 -0.033
+                            HOLDOUT   1.173  0.091 -0.059
+round-4 portfolio, 2x costs DESIGN    1.733  0.110 -0.034
+                            HOLDOUT   1.049  0.081 -0.062
+
+#### 2. Calendar years
+           M  round3  round4  round4_2x
+date                                   
+2022  0.0210  0.0715  0.0600     0.0542
+2023  0.1261  0.2232  0.1765     0.1679
+2024 -0.0757  0.1060  0.0310     0.0205
+2025  0.0382  0.1116  0.0968     0.0933
+/home/user/freqtrade/user_data/edge_research/final_eval_modern_r4.py:67: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  m = r4.groupby(r4.index.to_period("M")).apply(lambda v: (1 + v).prod() - 1).loc["2024-01":]
+
+round-4 holdout months positive 53%; worst -5.76%; total 13.08%; without best month 7.86%
+avg weights (holdout): {'A': 0.075, 'B': 0.13, 'C': 0.404, 'M': 0.368}
+M entries: design 84, holdout 89
+daily corr of M to A/B/C (2022+): {'A': 0.07, 'B': 0.05, 'C': -0.07, 'M': 1.0}
+
+#### 3. Plateau of M on the holdout (all design-plateau neighbours)
+    jump  hold  size  sharpe   cagr  maxdd
+0   0.50     1  0.05  -0.256 -0.029 -0.108
+1   0.50     1  0.10  -0.267 -0.066 -0.213
+2   0.50     2  0.05  -0.179 -0.029 -0.133
+3   0.50     2  0.10  -0.186 -0.071 -0.259
+4   0.50     3  0.05   0.032 -0.006 -0.132
+5   0.50     3  0.10   0.104 -0.009 -0.262
+6   0.60     1  0.05   0.941  0.061 -0.053
+7   0.60     1  0.10   0.926  0.118 -0.103
+8   0.60     2  0.05   0.719  0.063 -0.055
+9   0.60     2  0.10   0.705  0.118 -0.110
+10  0.60     3  0.05   0.762  0.072 -0.069
+11  0.60     3  0.10   0.742  0.134 -0.140
+12  0.75     1  0.05   1.719  0.086 -0.039
+13  0.75     1  0.10   1.708  0.175 -0.077
+14  0.75     2  0.05   1.581  0.109 -0.037
+15  0.75     2  0.10   1.572  0.223 -0.075
+16  0.75     3  0.05   1.532  0.111 -0.032
+17  0.75     3  0.10   1.516  0.225 -0.063
+holdout: 67% of 18 neighbours profitable; Sharpe median 0.75
+
+#### 4. Bootstrap max DD of the round-4 portfolio 2022..2025 (10-day blocks)
+median -6.4%, 95th pct -10.9%, 99th pct -13.5%
