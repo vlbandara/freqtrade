@@ -1,0 +1,129 @@
+rows 169,573  features 39  days 1948
+gbm 2022-01-01 train=41,693
+gbm 2022-02-01 train=44,793
+gbm 2022-03-01 train=47,593
+gbm 2022-04-01 train=50,693
+gbm 2022-05-01 train=53,693
+gbm 2022-06-01 train=56,793
+gbm 2022-07-01 train=59,793
+gbm 2022-08-01 train=62,893
+gbm 2022-09-01 train=65,993
+gbm 2022-10-01 train=68,993
+gbm 2022-11-01 train=72,093
+gbm 2022-12-01 train=75,093
+gbm 2023-01-01 train=78,193
+gbm 2023-02-01 train=81,293
+gbm 2023-03-01 train=84,093
+gbm 2023-04-01 train=87,193
+gbm 2023-05-01 train=90,193
+gbm 2023-06-01 train=93,293
+gbm 2023-07-01 train=96,293
+gbm 2023-08-01 train=99,393
+gbm 2023-09-01 train=102,493
+gbm 2023-10-01 train=105,493
+gbm 2023-11-01 train=108,593
+gbm 2023-12-01 train=111,576
+gbm 2024-01-01 train=114,676
+gbm 2024-02-01 train=117,776
+gbm 2024-03-01 train=120,676
+gbm 2024-04-01 train=123,740
+gbm 2024-05-01 train=126,740
+gbm 2024-06-01 train=129,840
+gbm 2024-07-01 train=132,840
+gbm 2024-08-01 train=135,926
+gbm 2024-09-01 train=139,023
+gbm 2024-10-01 train=142,005
+gbm 2024-11-01 train=145,105
+gbm 2024-12-01 train=148,104
+gbm 2025-01-01 train=151,204
+gbm 2025-02-01 train=154,287
+gbm 2025-03-01 train=157,087
+gbm 2025-04-01 train=160,175
+gbm 2025-05-01 train=163,156
+ridge 2022-01-01 train=41,693
+ridge 2022-02-01 train=44,793
+ridge 2022-03-01 train=47,593
+ridge 2022-04-01 train=50,693
+ridge 2022-05-01 train=53,693
+ridge 2022-06-01 train=56,793
+ridge 2022-07-01 train=59,793
+ridge 2022-08-01 train=62,893
+ridge 2022-09-01 train=65,993
+ridge 2022-10-01 train=68,993
+ridge 2022-11-01 train=72,093
+ridge 2022-12-01 train=75,093
+ridge 2023-01-01 train=78,193
+ridge 2023-02-01 train=81,293
+ridge 2023-03-01 train=84,093
+ridge 2023-04-01 train=87,193
+ridge 2023-05-01 train=90,193
+ridge 2023-06-01 train=93,293
+ridge 2023-07-01 train=96,293
+ridge 2023-08-01 train=99,393
+ridge 2023-09-01 train=102,493
+ridge 2023-10-01 train=105,493
+ridge 2023-11-01 train=108,593
+ridge 2023-12-01 train=111,576
+ridge 2024-01-01 train=114,676
+ridge 2024-02-01 train=117,776
+ridge 2024-03-01 train=120,676
+ridge 2024-04-01 train=123,740
+ridge 2024-05-01 train=126,740
+ridge 2024-06-01 train=129,840
+ridge 2024-07-01 train=132,840
+ridge 2024-08-01 train=135,926
+ridge 2024-09-01 train=139,023
+ridge 2024-10-01 train=142,005
+ridge 2024-11-01 train=145,105
+ridge 2024-12-01 train=148,104
+ridge 2025-01-01 train=151,204
+ridge 2025-02-01 train=154,287
+ridge 2025-03-01 train=157,087
+ridge 2025-04-01 train=160,175
+ridge 2025-05-01 train=163,156
+gbm IC by year: {2022: 0.1431, 2023: 0.1081, 2024: 0.1089, 2025: 0.1356}
+ridge IC by year: {2022: 0.1234, 2023: 0.0836, 2024: 0.0918, 2025: 0.141}
+                                 sharpe   cagr  maxdd  days  corr_btc  turn/d  y2022  y2023  IC_mean    IC_t  y2024  y2025
+model book              split                                                                                             
+gbm   ls_q0.2           DESIGN    1.067  0.202 -0.184   730    -0.279   0.302  0.513 -0.045    0.126  10.936    NaN    NaN
+                        HOLDOUT   0.941  0.251 -0.220   516    -0.210   0.279    NaN    NaN    0.117   7.393  0.086  0.264
+      ls_bn_q0.2        DESIGN    1.452  0.279 -0.138   730     0.109   0.325  0.320  0.239    0.126  10.936    NaN    NaN
+                        HOLDOUT   1.235  0.364 -0.190   516     0.060   0.313    NaN    NaN    0.117   7.393  0.259  0.232
+      ls_q0.1           DESIGN    0.899  0.213 -0.261   730    -0.285   0.358  0.752 -0.160    0.126  10.936    NaN    NaN
+                        HOLDOUT   0.936  0.312 -0.313   516    -0.209   0.343    NaN    NaN    0.117   7.393  0.049  0.400
+      short_hedged_q0.2 DESIGN    0.532  0.116 -0.281   730    -0.317   0.158  0.335 -0.067    0.126  10.936    NaN    NaN
+                        HOLDOUT   1.139  0.442 -0.224   516    -0.264   0.140    NaN    NaN    0.117   7.393  0.172  0.431
+      long_q0.2         DESIGN    0.157 -0.149 -0.700   730     0.842   0.289 -0.675  1.230    0.126  10.936    NaN    NaN
+                        HOLDOUT   0.353 -0.019 -0.599   516     0.802   0.277    NaN    NaN    0.117   7.393  0.300 -0.252
+ridge ls_q0.2           DESIGN   -0.124 -0.056 -0.341   730    -0.383   0.133  0.137 -0.216    0.103   7.513    NaN    NaN
+                        HOLDOUT   0.389  0.076 -0.276   516    -0.279   0.125    NaN    NaN    0.106   5.557 -0.102  0.235
+      ls_bn_q0.2        DESIGN    0.014 -0.022 -0.316   730     0.105   0.149 -0.058  0.014    0.103   7.513    NaN    NaN
+                        HOLDOUT   0.986  0.310 -0.224   516     0.053   0.147    NaN    NaN    0.106   5.557  0.165  0.257
+      ls_q0.1           DESIGN   -0.593 -0.214 -0.571   730    -0.315   0.171  0.144 -0.461    0.103   7.513    NaN    NaN
+                        HOLDOUT   0.656  0.208 -0.398   516    -0.275   0.171    NaN    NaN    0.106   5.557 -0.088  0.433
+      short_hedged_q0.2 DESIGN    0.138 -0.006 -0.399   730    -0.317   0.073  0.172 -0.157    0.103   7.513    NaN    NaN
+                        HOLDOUT   1.001  0.392 -0.230   516    -0.284   0.070    NaN    NaN    0.106   5.557  0.088  0.467
+      long_q0.2         DESIGN   -0.219 -0.302 -0.743   730     0.869   0.123 -0.738  0.864    0.103   7.513    NaN    NaN
+                        HOLDOUT   0.066 -0.186 -0.622   516     0.804   0.109    NaN    NaN    0.106   5.557  0.080 -0.308
+
+Top features by gain:
+ range_7d             0.112
+mkt_fund_avg         0.047
+log_age              0.047
+ret_1d               0.040
+corr_btc_30d         0.038
+ret_60d              0.036
+mkt_btc_vol_30d      0.036
+mkt_breadth_7d       0.034
+log_qv_30d           0.033
+vol_30d              0.033
+ret_3d               0.032
+dist_high_30d        0.028
+downvol_30d          0.028
+mkt_dispersion_7d    0.026
+has_spot             0.024
+LOCKED gbm ls_bn_q0.2 holdout, 1x costs: {'sharpe': np.float64(1.235), 'cagr': np.float64(0.364), 'maxdd': np.float64(-0.19), 'days': 516} years {2024: 0.259, 2025: 0.232}
+LOCKED gbm ls_bn_q0.2 holdout, 2x costs: {'sharpe': np.float64(0.953), 'cagr': np.float64(0.259), 'maxdd': np.float64(-0.214), 'days': 516} years {2024: 0.161, 2025: 0.193}
+/home/user/freqtrade/user_data/edge_research/r6_ml_alpha.py:156: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  mo = (1 + d).groupby(d.index.to_period("M")).prod() - 1
+holdout months positive (2x costs): 59%
