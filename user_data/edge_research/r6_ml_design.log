@@ -1,0 +1,32 @@
+rows 169,573  features 39  days 1948
+gbm IC by year: {2022: 0.1431, 2023: 0.1081}
+ridge IC by year: {2022: 0.1234, 2023: 0.0836}
+                                sharpe   cagr  maxdd  days  corr_btc  turn/d  y2022  y2023  IC_mean    IC_t
+model book              split                                                                              
+gbm   ls_q0.2           DESIGN   1.067  0.202 -0.184   730    -0.279   0.302  0.513 -0.045    0.126  10.936
+      ls_bn_q0.2        DESIGN   1.452  0.279 -0.138   730     0.109   0.325  0.320  0.239    0.126  10.936
+      ls_q0.1           DESIGN   0.899  0.213 -0.261   730    -0.285   0.358  0.752 -0.160    0.126  10.936
+      short_hedged_q0.2 DESIGN   0.532  0.116 -0.281   730    -0.317   0.158  0.335 -0.067    0.126  10.936
+      long_q0.2         DESIGN   0.157 -0.149 -0.700   730     0.842   0.289 -0.675  1.230    0.126  10.936
+ridge ls_q0.2           DESIGN  -0.124 -0.056 -0.341   730    -0.383   0.133  0.137 -0.216    0.103   7.513
+      ls_bn_q0.2        DESIGN   0.014 -0.022 -0.316   730     0.105   0.149 -0.058  0.014    0.103   7.513
+      ls_q0.1           DESIGN  -0.593 -0.214 -0.571   730    -0.315   0.171  0.144 -0.461    0.103   7.513
+      short_hedged_q0.2 DESIGN   0.138 -0.006 -0.399   730    -0.317   0.073  0.172 -0.157    0.103   7.513
+      long_q0.2         DESIGN  -0.219 -0.302 -0.743   730     0.869   0.123 -0.738  0.864    0.103   7.513
+
+Top features by gain:
+ range_7d             0.099
+mkt_fund_avg         0.050
+log_age              0.046
+ret_60d              0.039
+mkt_btc_vol_30d      0.038
+ret_1d               0.038
+log_qv_30d           0.034
+corr_btc_30d         0.033
+mkt_breadth_7d       0.033
+ret_3d               0.031
+vol_30d              0.031
+downvol_30d          0.029
+amihud_30d           0.027
+dist_high_30d        0.027
+mkt_dispersion_7d    0.027

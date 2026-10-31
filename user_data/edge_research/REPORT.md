@@ -302,3 +302,178 @@ The easy price- and funding-based signals in this dataset now look exhausted. Fu
 - cross-exchange funding and basis
 - on-chain flows
 - data after 2025-05 for a genuinely fresh test
+
+---
+
+# Round 6: audit everything, then go after what simple signals miss
+
+![round-6 equity curves](equity_curves_r6.png)
+
+**Bottom line.**
+1. **The carry harvest is the only edge that survives every test, including a multiple-testing correction.** But it is a **small-capital edge**: under a conservative impact model it stops paying above roughly $1–2M.
+2. **The round-3 portfolio is not statistically established.** Its holdout Sharpe of 1.45 is significant on its own (PSR 0.96), but not once you account for the ~8 independent bets searched to find it (deflated Sharpe 0.70, where 0.95 is the bar). Selecting the best design-window stream is close to a coin flip (PBO 0.53).
+3. **A new ML model (gradient-boosted trees over 39 point-in-time features) finds real, stable predictability**: rank IC 0.11–0.14 in *every* year 2022–2025, t = 13 over 2022–25. The pre-registered book **passed** its one-shot holdout (Sharpe 1.24, CAGR 36%, 2024 +26%, 2025 YTD +23%). However, the P&L is lumpy: holdout −5% without its best 3 months, a −24% drawdown lasting 15 months, deflated Sharpe 0.5–0.6. **Paper-trade it; don't fund it yet.**
+4. **Every attempted upgrade to carry failed honestly**, which is evidence the round-1 rules are not over-tuned.
+5. **Data bug found:** 37 pairs in the mirror have truncated histories. It biased stream A *against* itself, so no prior result was inflated by it.
+
+## 6.1 Reproduction and data audit (`r6_common.py`, `r6_audit_dilution.py`)
+
+* **Reproduction.** Rebuilt the dataset from `fetch_data.sh`. The carry leverage table and the round-3 holdout (Sharpe 1.458, 15.7%/yr) reproduce exactly. One pandas-3 fix: `carry2_lab` wrote into a read-only array.
+* **Truncated histories.** The mirror does not always start a pair at its real listing:
+  * 15 perps (ENA, TAO, ZRO, ZK, NOT, W, IO, …) start at exactly 2024-07-04 00:00, with $36–615M of first-day volume. They actually listed in April–June 2024.
+  * 1000SHIB, 1000LUNC, 1000XEC and LUNA2 start at exactly 2023-01-01.
+  * ICP, TLM, BNX, RIF, MOVR, FXS, W and CVC have funding history months or years older than their candles.
+
+  Stream A (short new listings) read "first candle" as the listing date, so it shorted established coins as fresh launches. Those fake listings lost 13.9% in 2023 and 5.8% in 2024. With clean listing dates, stream A improves (holdout Sharpe 1.36 → 1.45) and the locked portfolio is unchanged (1.46 → 1.45). `listing_age_hours_clean` is the fix: first candle and first funding agree within 2 days, and the pair is not part of a ≥3-pair batch cut at 00:00.
+* **Funding intervals.** Binance moved many coins to 4h (and some to 1h) funding. The funding files contain every settlement, so carry **P&L is correct**. The carry **signal**, however, averages the rate *per settlement*, which understates carry per 8h for those coins. Fixing it made results *worse* (see 6.4).
+* **No data after 2025-05-30 was available.** Exchange APIs are blocked by this environment's network policy, and attaching another public dataset repository was not permitted in this session. A truly fresh test still needs data from June 2025 onward.
+
+## 6.2 Overfitting audit (`r6_trials.py`, `r6_overfit.py`, `r6_overfit.log`)
+
+I rebuilt the daily returns of all 71 single-stream trials from rounds 3–4 and the 27 portfolio neighbours, 2022-01 → 2025-05. Their correlation spectrum gives an **effective N of 8.4** independent trials (the 27 portfolio neighbours count as 1.2).
+
+**CSCV** (16 blocks, all 12,870 half/half splits):
+
+| Trial set | PBO | OOS Sharpe of the IS winner (median) | P(IS winner loses OOS) |
+|---|---|---|---|
+| Single streams | **0.53** | 0.43 | 18% |
+| Portfolio neighbours | 0.81 (the 27 are nearly one strategy) | 1.27 | 0% |
+| Everything | 0.51 | 0.75 | 12% |
+
+**Deflated Sharpe.** This is the probability that the true Sharpe beats the best of N skill-less trials; 0.95 is the significance bar. The trial-Sharpe variance comes from the round-3/4 design window.
+
+| Claim | Sharpe | PSR | DSR N_eff = 8 | DSR N = 361 |
+|---|---|---|---|---|
+| Carry 1×, OOS 2024–25 | 6.93 | 1.000 | **1.000** | **1.000** |
+| Round-3 portfolio, holdout | 1.45 | 0.962 | 0.702 | 0.241 |
+| Stream A / C / B, holdout | 1.36 / 1.47 / 0.10 | 0.95 / 0.96 / 0.55 | 0.66 / 0.71 / 0.14 | ≤ 0.25 |
+| ML book, holdout | 1.23 | 0.926 | 0.573 (N = 10) | 0.484 (N = 18) |
+| ML book, walk-forward 2022–25 | 1.30 | 0.991 | 0.660 (N = 10) | 0.526 (N = 18) |
+
+The design-window ranking does carry some information into the holdout: Spearman 0.35 over 71 trials, p = 0.003. However, it is too weak to make "best in design" a reliable pick.
+
+There is also a statistical-power point. Stream C carries 65% of the round-3 portfolio, and it opened **10 positions** in the whole holdout. Seventeen months of a Sharpe-1.5 strategy cannot be told apart from luck once you have searched; that takes years, or a much higher Sharpe.
+
+## 6.3 ML cross-sectional alpha (`r6_ml_features.py`, `r6_ml_alpha.py`, `r6_ml_LOCK.md`)
+
+Rounds 1–4 tested signals one at a time. Here, 39 point-in-time features feed one model. Each feature is ranked cross-sectionally per day; the market-state features are kept raw.
+
+| Feature group | Features |
+|---|---|
+| Momentum | 1–60d momentum; residual momentum vs BTC |
+| Volatility and tails | volatility, downside volatility, skew, MAX/MIN, range |
+| Liquidity and volume | Amihud illiquidity, volume shocks |
+| Funding | funding paid (interval-agnostic) level, change and z-score |
+| Basis and spot | perp–spot basis, spot availability |
+| Structure | BTC beta and correlation, clean listing age |
+| Market state | BTC trend and volatility, breadth, average funding, dispersion |
+
+* **Protocol.**
+  * Universe: point-in-time top-100 perps.
+  * Target: 3-day forward return including funding, net of the cross-sectional mean.
+  * Model: LightGBM, 3 seeds, with a ridge baseline.
+  * Walk-forward: retrained monthly from 2022-01, with a purge and embargo so that no training target overlaps the prediction month.
+  * Book chosen on 2022–23 only, then **committed to git (`r6_ml_LOCK.md`, commit 2143d4c) before the 2024–25 holdout was opened once.**
+* **Leakage check.** The IC barely moves when entry is delayed by 1–24h (0.124 → 0.106), so this is not a close-price or timing artifact.
+* **Nonlinearity matters.** Ridge on the same features has similar IC but makes ~0 in the design window.
+* **Locked book.** Long the top quintile and short the bottom quintile, equal weight, with a BTC hedge cancelling the 30-day net beta and a 3-day staggered hold.
+  * **Why the beta hedge.** The plain long/short had −0.28 correlation to BTC: the model's shorts are high-beta coins.
+
+| Locked ML book | Sharpe | CAGR | Max DD | Years | IC (t) |
+|---|---|---|---|---|---|
+| Design 2022–23 | 1.45 | 27.9% | −13.8% | 2022 +32.0%, 2023 +23.9% | 0.126 (10.9) |
+| **Holdout 2024–25, 1× costs** | **1.24** | **36.4%** | −19.0% | 2024 +25.9%, 2025 YTD +23.2% | 0.117 (7.4) |
+| Holdout, 2× costs | 0.95 | 25.9% | −21.4% | 2024 +16.1%, 2025 YTD +19.3% | |
+
+Pass bar (Sharpe ≥ 1.0, both years positive, DD ≤ 25%, positive at 2× costs): **passed**.
+
+**What tempers it** (`r6_ml_concentration.log`):
+* **Concentrated holdout gains.**
+  * Jan–Oct 2024: −3.1%
+  * Nov 2024–Feb 2025: **+43.8%**
+  * Mar–May 2025: +11.2%
+  * Without the best 3 holdout months: −5.3%.
+* **Long underwater period.** Max DD over 2022–25 is −23.9%, from a peak in Aug 2023 to a trough in Jun 2024; it recovered in Nov 2024.
+* **Not significant after deflation.** DSR is 0.5–0.66 (6.2).
+
+So the *prediction* is robust, but the current *book* monetises it unevenly. The long leg alone loses money (holdout Sharpe 0.35). The obvious next step is better portfolio construction from the same predictions, such as prediction-weighted sizing, risk-model neutralisation and turnover-aware optimisation. That must be designed on 2022–23 and tested on new data.
+
+**Capacity** is far larger than carry, since it trades perps only, in the top 100. A coin's daily trade reaches 1% of its 24h volume at $12M AUM for the 99th-percentile trade and $120M for the median.
+
+## 6.4 Carry upgrades (`r6_carry.py`): all rejected
+
+Design 2020–23; OOS opened once under a rule committed beforehand (`r6_ml_LOCK.md`).
+
+| Variant | IS Sharpe | VAL Sharpe | VAL Sharpe at 2× costs | OOS Sharpe (2× costs) | Verdict |
+|---|---|---|---|---|---|
+| V0 locked round-1 rules | 6.34 | 4.76 | 0.23 | 6.93 (4.10) | **kept** |
+| V1 interval-normalised signal | 5.66 | 2.30 | −3.88 | 5.90 (1.82) | rejected |
+| V2 LightGBM funding forecast | 3.56 | 2.05 | −3.47 | 4.76 (0.10) | rejected |
+| V3 forecast + cost hurdle | 4.54 | 6.21 | 2.50 | 6.33 (3.68) | rejected: fails its adoption rule (2× costs OOS Sharpe must beat V0's) |
+
+* **The forecast is better than the trailing average.** In OOS its correlation with the next 7 days of funding is 0.52, against 0.37 for the trailing 3-day average.
+* **But trading it is worse.** Forecasting funding isn't the bottleneck; transaction costs are.
+* **Why fixing the interval made things worse.** Binance moves coins to shorter intervals when funding spikes, and the spikes mean-revert within days. Measuring those coins correctly pulls them into the book at the worst time. The old signal under-weights them, which acts as an accidental filter.
+
+## 6.5 Carry capacity (`r6_capacity.py`)
+
+The model: executed trades only (honouring the simulator's re-size band), square-root impact `0.5·σ_daily·√(trade/ADV)`, and each leg charged against its own market's 24h volume. Y = 0.5 is deliberately conservative.
+
+| AUM | Impact per leg | IS CAGR | VAL 2023 | OOS CAGR / Sharpe |
+|---|---|---|---|---|
+| $0.1M | 3.6 bp | 17.9% | +2.5% | 6.6% / 6.0 |
+| $1M | 11.4 bp | 10.7% | −1.0% | 5.0% / 4.2 |
+| $5M | 25.5 bp | −1.1% | −7.0% | 2.1% / 1.5 |
+| $20M | 50.9 bp | −19.4% | −17.0% | −2.9% / −1.5 |
+
+* **The spot leg binds in 96% of trades.** Rich funding concentrates in thin alts.
+* **Cold years are tightest.** In 2022 and 2025, a median-sized trade hits 1% of daily volume at about $3.5M AUM.
+
+## 6.6 How the survivors combine (`r6_combo.py`)
+
+Daily correlations over 2022–25: carry vs ML −0.01, carry vs round-3 0.01, ML vs round-3 0.28.
+
+A fixed 90-day inverse-vol mix of ML + round-3 gives:
+* design: Sharpe 2.06, 20.6%/yr, DD −5.0%
+* holdout: Sharpe 1.46, 19.1%/yr, DD −8.5%
+
+The components' holdouts were opened before this mix was formed, so these numbers are **descriptive, not a test**.
+
+Inverse-vol mixes that include carry are dominated by carry's tiny volatility. Run carry as a separate small account instead.
+
+## 6.7 Recommendation after round 6
+
+| Stream | Status | Use |
+|---|---|---|
+| Carry harvest (round-1 rules) | Proven (DSR 1.00) | Trade it, sized ≤ about $1–2M, maker/BNB fees, 1× unless borrow is cheap |
+| ML book (`r6_ml_LOCK.md`) | Predictive signal proven (IC t = 13); P&L not yet (DSR 0.5–0.66) | Paper-trade from now; fund only after about 6–12 months of live IC ≥ 0.06 and positive P&L |
+| Round-3 portfolio | Plausible, not proven (DSR 0.70) | Small allocation at most; treat as paper trading |
+
+**Highest-value next steps:**
+1. Data from June 2025 onward, for a genuinely untouched test of all three. This is one `freqtrade download-data` run on a machine with exchange access.
+2. Portfolio construction for the ML predictions, designed on 2022–23 only.
+3. Open-interest and liquidation data as model features.
+
+## 6.8 Files
+
+| File | Purpose |
+|---|---|
+| `r6_common.py` | Clean listing dates, per-pair P&L, stats |
+| `r6_audit_dilution.py` / `.log` | Truncated-history audit of stream A and the portfolio |
+| `r6_trials.py` | Rebuilds the daily returns of all 98 modern-regime trials |
+| `r6_overfit.py` / `.log` | CSCV PBO, PSR, deflated Sharpe, selection-rule check |
+| `r6_ml_features.py`, `r6_ml_alpha.py` | Feature panel, purged walk-forward, books (`--holdout`, `--reuse`) |
+| `r6_ml_LOCK.md` | Pre-registration for the ML book and the carry OOS rule |
+| `r6_ml_design.log`, `r6_ml_holdout.log`, `r6_ml_*.csv` | ML results |
+| `r6_ml_concentration.log` | Holdout concentration and drawdown duration |
+| `r6_carry.py`, `r6_carry_design.log`, `r6_carry_oos.log`, `r6_carry_*.csv` | Carry upgrades V1–V3 |
+| `r6_capacity.py` / `.log` | Carry capacity |
+| `r6_combo.py` / `.log`, `equity_curves_r6.png` | Correlations, mixes, ML capacity, ML deflated Sharpe, chart |
+
+Reproduce (about 1.5 h on 4 cores; needs `pip install pyarrow numba lightgbm scipy matplotlib`):
+```bash
+cd user_data/edge_research && ./fetch_data.sh '-(1h-futures|8h-funding_rate|8h-mark)\.feather$' && ./fetch_data.sh '^binance/[A-Z0-9]+_USDT-1h\.feather$'
+```
+```bash
+cd user_data/edge_research && python3 r6_audit_dilution.py && python3 r6_trials.py && python3 r6_overfit.py && python3 r6_ml_alpha.py && python3 r6_ml_alpha.py --holdout && python3 r6_carry.py --oos && python3 r6_capacity.py && python3 r6_combo.py
+```

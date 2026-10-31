@@ -1,0 +1,11 @@
+forecast 2021-23: corr(pred, fwd7)=0.611  corr(trailing 3d, fwd7)=0.630  MAE pred 1.52bp vs trailing 1.65bp
+forecast 2024-25: corr(pred, fwd7)=0.642  corr(trailing 3d, fwd7)=0.375  MAE pred 1.30bp vs trailing 1.39bp
+              variant    costs  IS_cagr  IS_sh  IS_dd  VAL_cagr  VAL_sh  VAL_dd  y2021  y2022  y2023  avg_gross
+0           V0_locked    taker    0.213  6.343 -0.018     0.042   4.764  -0.004  0.498  0.004  0.042      0.438
+1           V0_locked  taker2x    0.150  4.108 -0.034     0.002   0.228  -0.027  0.384 -0.003  0.002      0.438
+2       V1_paid_per8h    taker    0.197  5.657 -0.020     0.022   2.300  -0.019  0.477 -0.017  0.022      0.639
+3       V1_paid_per8h  taker2x    0.112  2.988 -0.076    -0.050  -3.876  -0.078  0.348 -0.066 -0.050      0.640
+4         V2_forecast    taker    0.103  3.564 -0.039     0.017   2.047  -0.022  0.380 -0.028  0.017      0.481
+5         V2_forecast  taker2x    0.035  1.111 -0.160    -0.042  -3.467  -0.069  0.201 -0.076 -0.042      0.482
+6  V3_forecast_hurdle    taker    0.127  4.540 -0.017     0.042   6.214  -0.001  0.433 -0.001  0.042      0.319
+7  V3_forecast_hurdle  taker2x    0.095  3.166 -0.037     0.019   2.496  -0.006  0.318 -0.003  0.019      0.320

@@ -1,0 +1,20 @@
+trades: 3595; median binding ADV $48.5M (spot is the binding leg in 96% of trades)
+
+#### AUM (USD) at which a trade is 1% of the binding leg's 24h volume, by year
+     10th pct trade (tight) median trade
+year                                    
+2020                  0.45M        3.21M
+2021                  4.68M       29.63M
+2022                  0.87M        3.84M
+2023                  1.08M        5.71M
+2024                  2.93M       21.39M
+2025                  1.18M        3.43M
+
+#### Square-root impact: net CAGR / Sharpe of the 1x book vs AUM (impact on both legs)
+  AUM  avg impact bp/leg  IS_cagr  IS_sh  VAL_cagr  VAL_sh  OOS_cagr  OOS_sh
+$0.1M              3.600    0.179  5.080     0.025   2.756     0.066   6.049
+  $1M             11.385    0.107  2.649    -0.010  -0.849     0.050   4.200
+  $5M             25.459   -0.011 -0.168    -0.070  -4.063     0.021   1.464
+ $20M             50.917   -0.194 -2.399    -0.170  -5.899    -0.029  -1.464
+ $50M             80.507   -0.365 -3.453    -0.273  -6.598    -0.085  -3.123
+$100M            113.855   -0.515 -4.035    -0.373  -6.945    -0.143  -4.093
