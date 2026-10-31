@@ -145,3 +145,13 @@ print(res.set_index(["model", "book", "split"]).round(3).to_string())
 print("\nTop features by gain:\n", (imp / imp.sum()).head(15).round(3).to_string())
 pd.to_pickle({"gbm": pg, "ridge": pr_, "imp": imp}, L.CACHE / f"r6_ml_preds_{tag}.pkl")
 res.to_csv(f"r6_ml_{tag}.csv", index=False)
+
+if OPEN_HOLDOUT:  # pass-bar checks for the locked book only (r6_ml_LOCK.md)
+    wl = book(pg, 0.2, "ls_bn")
+    for fx in (1, 2):
+        d = C6.daily(L.run("locked", wl, p, fee=fx * L.FEE).pnl).loc["2024":"2025"]
+        yr = (1 + d).groupby(d.index.year).prod() - 1
+        print(f"LOCKED gbm ls_bn_q0.2 holdout, {fx}x costs:", {k: round(v, 3) for k, v in C6.stats(d).items()},
+              "years", yr.round(3).to_dict())
+    mo = (1 + d).groupby(d.index.to_period("M")).prod() - 1
+    print("holdout months positive (2x costs):", f"{(mo > 0).mean():.0%}")
