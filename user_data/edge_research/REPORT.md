@@ -193,3 +193,61 @@ No newer data source was found: the mirror and its fork stop at 2025-05-30, and 
 Run the carry harvest at **1×** if your USDT borrow rate is above about 12% APR, or **1.5–2×** if you can borrow at about 8% or less. Use cross or portfolio margin, maker or BNB-discount fees, and monitor funding. Expect 5–15% in normal years and much more in levered-up bull phases, with drawdowns that have stayed under 4%.
 
 `carry_signals.py 10000 2` prints the target book.
+
+---
+
+# Round 3: strategies for today's market (2021 excluded)
+
+![round-3 equity curves](equity_curves_v3.png)
+
+**Why.** The carry harvest made most of its money in 2021-style leverage mania. If that regime doesn't return, carry yields roughly 0.4–10% a year. So round 3 ignores 2020–2021 completely:
+- **Design window:** 2022–2023, covering the bear market, the FTX collapse and the recovery.
+- **Holdout:** 2024-01 → 2025-05, opened once for the locked portfolio.
+
+**Result.** The locked portfolio blends three independent return streams with inverse-volatility weights:
+
+| | Design 2022–23 | **Holdout 2024–25** | Holdout at 2× costs |
+|---|---|---|---|
+| **Portfolio A+B+C** | Sharpe 1.59 · 14.5%/yr · DD −4.8% | **Sharpe 1.46 · 15.7%/yr · DD −6.9%** | Sharpe 1.35 · 14.5%/yr |
+
+Calendar years: 2022 **+7.2%** (BTC −65%), 2023 **+22.3%**, 2024 **+10.6%**, 2025 Jan–May **+11.2%**. Correlation to BTC is 0.07. 71% of holdout months were positive; the worst month was −5.0%.
+
+Checks:
+- **Plateau:** all 27 neighbouring settings are profitable on the holdout (median Sharpe 1.55, minimum 1.20).
+- **Best month removed:** the holdout is still +13.6%.
+- **Lookahead:** truncation test passes (`lookahead_test_modern.py`).
+- **Bootstrap drawdown** (2022–25, 10-day blocks): median −8.9%, 95th percentile −14.8%. Plan for drawdowns up to about 15%.
+
+**Against the pass bar:** everything passes except the holdout Sharpe, which narrowly misses (1.46 vs 1.5). I did not re-tune to clear it.
+
+## The three streams
+
+| Stream | Idea | Design Sharpe | Holdout Sharpe / CAGR / DD | Avg weight |
+|---|---|---|---|---|
+| **A. Short new listings** (`modern_lab.dilution_short`) | Short perps in days 2–30 after listing, sized by inverse vol, 10% cap per coin, BTC long hedge. Thesis: low-float, high-FDV launches with unlock overhang decay against BTC. | 0.94 | **1.36 / 53.8% / −20.9%** | 12% |
+| **B. BTC vs alts** (`btc_vs_alts`) | Long BTC / short the equal-weight top-30 alts while ALT/BTC is below its 20-day average | 0.76 | 0.14 / 0.5% / −19% (weak) | 21% |
+| **C. Majors trend** (`majors_trend`) | BTC + ETH long or flat, 55-day breakout in, 20-day breakdown out, 15% vol target | 0.71 | **1.45 / 12.9% / −8.3%** | 65% |
+
+A is positive every year (2022 +27.6%, 2023 +22.0%, 2024 +32.6%, 2025 Jan–May +38.7%), but it is volatile on its own. C is the stabiliser. B did little in the holdout but stays in, because it was locked beforehand.
+
+## Rejected in round 3
+- **D. Intraday mean reversion on majors** (5m, post-only limit entries, 12 variants): Sharpe −3 to −10 in the design window. Limit orders fill exactly when price keeps running (adverse selection). Dead.
+- **A2. "Confirmed" dilution short** (short only below the coin's own EMA): worse than plain A (Sharpe 0.49–0.87).
+- About 36 variants were tried in total (`modern_screen.csv`, `modern_screen2.log`).
+
+## Freqtrade ports
+- **`strategies/EdgeHuntMajorsTrend.py`** (C), with `config_majors_trend.json`.
+  - 2022-01 → 2025-05: +35.9%, CAGR 9.4%, max underwater 4.8%. Years: −4.6% / +4.4% / +33.6% / +2.4%.
+  - Signs match the harness each year. Magnitudes differ because freqtrade sizes each trade once at entry, while the harness re-sizes daily.
+  - freqtrade `lookahead-analysis`: **no bias**.
+- **`strategies/EdgeHuntDilutionShort.py`** (A), with `config_dilution_short.json`.
+  - Shorts new listings and keeps a BTC hedge. Every leg is re-sized to target daily via `adjust_trade_position`.
+  - 2022-01 → 2025-05: **+149%** in total, against +186% for the harness stream.
+  - freqtrade's yearly split and its "max underwater" (−55%) count profit only when a trade closes. The BTC hedge stays open for months, so its gains are booked late, while short losses are booked as they happen. Use the harness's hourly mark-to-market figures for drawdown.
+  - Two porting traps, both fixed and documented in the code:
+    - Freqtrade's backtester drops the first `startup_candle_count` candles of *every* pair (`converter.trim_dataframe`). That erases a new listing's first weeks, so the strategy uses a 24-candle startup.
+    - Without daily rebalancing, squeezed shorts grow huge. The first port had −42% DD, and its short side lost money.
+- **B** is not ported. The portfolio weighting (inverse-vol across three books) has to run outside a single freqtrade bot: either three bots with capital split by the weights in `final_eval_modern.log`, or a small allocator.
+
+## How to use it
+Run C and A as separate freqtrade bots, plus B if you want the full locked mix. Split capital roughly 65 / 12 / 21, matching the average holdout weights, or recompute the inverse-vol weights monthly. Expect about 10–20% a year with Sharpe around 1.5 and drawdowns of 7–15%, in markets like 2022–2025.

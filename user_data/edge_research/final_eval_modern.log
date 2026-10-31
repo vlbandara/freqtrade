@@ -1,0 +1,170 @@
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+#### 1. Holdout 2024-01 .. 2025-05 (opened once) and design window, per stream
+                            sharpe   cagr  maxdd
+stream             split                        
+A                  DESIGN    0.939  0.247 -0.213
+                   HOLDOUT   1.355  0.538 -0.209
+B                  DESIGN    0.755  0.136 -0.191
+                   HOLDOUT   0.141  0.005 -0.190
+C                  DESIGN    0.706  0.055 -0.067
+                   HOLDOUT   1.451  0.129 -0.083
+PORTFOLIO          DESIGN    1.585  0.145 -0.048
+                   HOLDOUT   1.459  0.157 -0.069
+PORTFOLIO 2x costs DESIGN    1.494  0.136 -0.049
+                   HOLDOUT   1.354  0.145 -0.070
+
+#### 2. Calendar years
+           A       B       C  PORTFOLIO  PORT_2x
+date                                            
+2022  0.2757  0.1239 -0.0609     0.0715   0.0659
+2023  0.2199  0.1484  0.1845     0.2232   0.2102
+2024  0.3256 -0.0502  0.1544     0.1060   0.0924
+2025  0.3865  0.0599  0.0283     0.1116   0.1083
+
+#### 3. Monthly (portfolio), best-month removal, average weights
+/home/user/freqtrade/user_data/edge_research/final_eval_modern.py:63: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  m = port.groupby(port.index.to_period("M")).apply(lambda v: (1 + v).prod() - 1)
+date
+2022-01    0.0615
+2022-02    0.0000
+2022-03   -0.0067
+2022-04   -0.0076
+2022-05    0.0178
+2022-06    0.0036
+2022-07   -0.0011
+2022-08   -0.0109
+2022-09   -0.0014
+2022-10    0.0159
+2022-11    0.0002
+2022-12    0.0000
+2023-01    0.0533
+2023-02   -0.0311
+2023-03    0.0604
+2023-04    0.0029
+2023-05    0.0213
+2023-06    0.0452
+2023-07   -0.0116
+2023-08    0.0137
+2023-09   -0.0091
+2023-10    0.0437
+2023-11    0.0175
+2023-12    0.0016
+2024-01    0.0043
+2024-02    0.0822
+2024-03   -0.0503
+2024-04    0.0490
+2024-05   -0.0093
+2024-06    0.0009
+2024-07   -0.0107
+2024-08    0.0078
+2024-09   -0.0053
+2024-10    0.0176
+2024-11    0.0075
+2024-12    0.0132
+2025-01    0.0558
+2025-02    0.0114
+2025-03    0.0131
+2025-04   -0.0014
+2025-05    0.0289
+Freq: M
+holdout months positive 71%; worst -5.03%; best 8.22%
+holdout total 22.94%; without best month 13.61%
+avg stream weights (holdout): {'A': 0.123, 'B': 0.206, 'C': 0.65}
+
+#### 4. Trade counts in holdout
+  A: 186 position openings
+  B: 1211 position openings
+  C: 10 position openings
+
+#### 5. Plateau: all neighbours of the locked settings (holdout portfolio)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+          A   B              C  sharpe   cagr  maxdd  design_sharpe
+0   (30, 1)  10  donchian20/55   1.647  0.175 -0.057          1.446
+1   (30, 1)  10  donchian10/20   1.666  0.183 -0.062          1.110
+2   (30, 1)  10        ema5/20   1.690  0.200 -0.065          1.182
+3   (30, 1)  20  donchian20/55   1.459  0.157 -0.069          1.585
+4   (30, 1)  20  donchian10/20   1.481  0.164 -0.070          1.219
+5   (30, 1)  20        ema5/20   1.498  0.180 -0.072          1.280
+6   (30, 1)  50  donchian20/55   1.546  0.171 -0.071          1.532
+7   (30, 1)  50  donchian10/20   1.610  0.183 -0.064          1.091
+8   (30, 1)  50        ema5/20   1.646  0.203 -0.079          1.126
+9   (60, 1)  10  donchian20/55   1.380  0.148 -0.068          1.330
+10  (60, 1)  10  donchian10/20   1.384  0.153 -0.062          1.079
+11  (60, 1)  10        ema5/20   1.445  0.174 -0.074          1.175
+12  (60, 1)  20  donchian20/55   1.197  0.131 -0.072          1.457
+13  (60, 1)  20  donchian10/20   1.204  0.135 -0.067          1.180
+14  (60, 1)  20        ema5/20   1.259  0.154 -0.079          1.264
+15  (60, 1)  50  donchian20/55   1.294  0.145 -0.080          1.402
+16  (60, 1)  50  donchian10/20   1.341  0.155 -0.075          1.049
+17  (60, 1)  50        ema5/20   1.415  0.179 -0.087          1.104
+18  (30, 7)  10  donchian20/55   1.735  0.185 -0.063          1.372
+19  (30, 7)  10  donchian10/20   1.836  0.203 -0.056          1.083
+20  (30, 7)  10        ema5/20   1.925  0.230 -0.070          1.159
+21  (30, 7)  20  donchian20/55   1.547  0.168 -0.067          1.498
+22  (30, 7)  20  donchian10/20   1.654  0.186 -0.061          1.179
+23  (30, 7)  20        ema5/20   1.739  0.211 -0.074          1.245
+24  (30, 7)  50  donchian20/55   1.624  0.181 -0.075          1.449
+25  (30, 7)  50  donchian10/20   1.770  0.204 -0.068          1.056
+26  (30, 7)  50        ema5/20   1.873  0.234 -0.083          1.097
+holdout: 100% of 27 neighbours profitable; Sharpe median 1.55, min 1.20
+
+#### 6. Bootstrap max drawdown, full 2022..2025 portfolio (10-day blocks)
+median -8.9%, 95th pct -14.8%, 99th pct -18.7%
+
+corr to BTC (daily 2022+): 0.07
