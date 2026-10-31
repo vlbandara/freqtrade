@@ -1,0 +1,22 @@
+  mo = (1 + d).groupby(d.index.to_period("M")).prod() - 1
+ML locked book, holdout concentration
+2024-01..2024-10: -3.1% | 2024-11..2025-02: +43.8% | 2025-03..05: +11.2%
+holdout total +55.0% ; without best 3 months -5.3%
+max DD -23.9% peak 2023-08-28 trough 2024-06-02 recovered 2024-11-16
+quarters positive 71% of 14
+date
+2022Q1    0.134
+2022Q2   -0.008
+2022Q3    0.094
+2022Q4    0.073
+2023Q1    0.078
+2023Q2    0.182
+2023Q3   -0.029
+2023Q4    0.001
+2024Q1   -0.105
+2024Q2   -0.034
+2024Q3    0.044
+2024Q4    0.394
+2025Q1    0.216
+2025Q2    0.013
+Freq: Q-DEC

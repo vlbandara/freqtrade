@@ -135,11 +135,11 @@ if "--reuse" in sys.argv:
 else:
     pg, imp = walk_forward("gbm")
     pr_, _ = walk_forward("ridge")
-for tag, pred in (("gbm", pg), ("ridge", pr_)):
-    tab, ic = summarize(tag, pred)
+for mname, pred in (("gbm", pg), ("ridge", pr_)):
+    tab, ic = summarize(mname, pred)
     out.append(tab)
     yr = ic.groupby(ic.index.year).mean()
-    print(f"{tag} IC by year:", yr.round(4).to_dict())
+    print(f"{mname} IC by year:", yr.round(4).to_dict())
 res = pd.concat(out)
 print(res.set_index(["model", "book", "split"]).round(3).to_string())
 print("\nTop features by gain:\n", (imp / imp.sum()).head(15).round(3).to_string())

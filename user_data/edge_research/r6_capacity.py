@@ -32,7 +32,19 @@ sig_d = close.pct_change(fill_method=None).rolling(24 * 7, min_periods=48).std()
 w = C2.target_weights(p, spot, L.universe(p, 50), top_k=10)
 r, comp, g = C2.simulate(p, spot, w, lev=1, borrow_apr=0.08)
 eq = (1 + r).cumprod()
-dw = (w - w.shift(1).fillna(0)).abs()
+# executed trades: replicate carry2_lab.simulate's re-size band (|change| > 25% of the held
+# target, or an entry / exit); unexecuted target wiggles are not trades
+W = w.to_numpy(copy=True)
+alive = (close.notna() & spot.notna()).to_numpy()
+W[~alive] = 0.0
+held = np.zeros(W.shape[1])
+D = np.zeros_like(W)
+for t in range(len(W)):
+    tg = W[t]
+    ch = (np.abs(tg - held) > 0.25 * np.maximum(held, 1e-12)) | ((tg == 0) != (held == 0))
+    D[t] = np.where(ch, np.abs(tg - held), 0.0)
+    held = np.where(ch, tg, held)
+dw = pd.DataFrame(D, index=w.index, columns=w.columns)
 k = 1 / 1.2
 trades = dw.stack()
 trades = trades[trades > 1e-9]
@@ -57,11 +69,13 @@ print("\n#### Square-root impact: net CAGR / Sharpe of the 1x book vs AUM (impac
 rows = []
 base_cost = C2.COSTS["taker"]
 for aum in (1e5, 1e6, 5e6, 2e7, 5e7, 1e8):
-    imp = 0.5 * T.sig * np.sqrt(aum * T.frac / T.bind)
-    # extra cost per $ of AUM = sum over trades of notional fraction * impact, both legs
-    extra = (T.frac * imp * 2).groupby(T.t).sum().reindex(r.index).fillna(0)
+    imp_s = 0.5 * T.sig * np.sqrt(aum * T.frac / T.adv_spot)
+    imp_p = 0.5 * T.sig * np.sqrt(aum * T.frac / T.adv_perp)
+    imp = (imp_s + imp_p) / 2
+    # extra cost per $ of AUM = sum over trades of notional fraction * impact, each leg vs its own ADV
+    extra = (T.frac * (imp_s + imp_p)).groupby(T.t).sum().reindex(r.index).fillna(0)
     rr = r - extra / eq.shift(1).fillna(1)
-    row = {"AUM": f"${aum / 1e6:g}M", "avg impact bp": float((imp * 1e4).mean())}
+    row = {"AUM": f"${aum / 1e6:g}M", "avg impact bp/leg": float((imp * 1e4).mean())}
     for s in ("IS", "VAL", "OOS"):
         m = L.metrics(rr, *L.SPLITS[s])
         row[f"{s}_cagr"], row[f"{s}_sh"] = m["cagr"], m["sharpe"]

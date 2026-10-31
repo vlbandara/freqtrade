@@ -1,0 +1,29 @@
+#### Correlation of daily returns 2022-25
+       CARRY    ML    R3
+CARRY   1.00 -0.01  0.01
+ML     -0.01  1.00  0.28
+R3      0.01  0.28  1.00
+
+#### Streams and fixed inverse-vol mixes
+                     sharpe   cagr  maxdd  days  y2022  y2023  y2024  y2025
+stream      split                                                          
+CARRY       DESIGN    3.546  0.023 -0.004   730  0.004  0.042    NaN    NaN
+            HOLDOUT   6.934  0.074 -0.007   515    NaN    NaN  0.101  0.004
+ML          DESIGN    1.452  0.279 -0.138   730  0.320  0.239    NaN    NaN
+            HOLDOUT   1.234  0.364 -0.190   515    NaN    NaN  0.259  0.231
+R3          DESIGN    1.590  0.145 -0.048   730  0.072  0.224    NaN    NaN
+            HOLDOUT   1.447  0.156 -0.069   515    NaN    NaN  0.106  0.110
+CARRY+ML    DESIGN    2.177  0.038 -0.012   730  0.021  0.055    NaN    NaN
+            HOLDOUT   5.466  0.074 -0.012   515    NaN    NaN  0.094  0.011
+ML+R3       DESIGN    2.058  0.206 -0.050   730  0.156  0.258    NaN    NaN
+            HOLDOUT   1.458  0.191 -0.085   515    NaN    NaN  0.110  0.152
+CARRY+ML+R3 DESIGN    2.878  0.050 -0.010   730  0.038  0.062    NaN    NaN
+            HOLDOUT   4.825  0.079 -0.013   515    NaN    NaN  0.095  0.017
+
+#### ML book capacity (perp only): AUM at which a coin's daily trade = 1% of its 24h volume
+{'p50': '$119.9M', 'p90': '$30.2M', 'p99': '$12.4M'}
+chart saved
+
+#### ML stream: PSR / DSR (N = 10 ML configurations; N = 18 adds the 8 effective round-3/4 bets)
+holdout 2024-25: Sharpe 1.23  PSR 0.926  DSR(N=10) 0.573  DSR(N=18) 0.484  | rank IC 0.117, overlap-adjusted t 7.4
+walk-forward 2022-25: Sharpe 1.30  PSR 0.991  DSR(N=10) 0.660  DSR(N=18) 0.526  | rank IC 0.122, overlap-adjusted t 13.0
