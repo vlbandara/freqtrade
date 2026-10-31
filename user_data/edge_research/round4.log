@@ -1,0 +1,74 @@
+{'name': 'R_carry_k1_in0.0001_top5', 'IS_sharpe': np.float64(2.353), 'IS_cagr': np.float64(0.489), 'IS_maxdd': np.float64(-0.283), 'VAL_sharpe': np.float64(6.513), 'VAL_cagr': np.float64(0.118), 'VAL_maxdd': np.float64(-0.006), 'turn/d': np.float64(0.115), 'expo': np.float64(1.937)}
+{'name': 'R_carry_k1_in0.0001_top10', 'IS_sharpe': np.float64(2.559), 'IS_cagr': np.float64(0.263), 'IS_maxdd': np.float64(-0.15), 'VAL_sharpe': np.float64(6.365), 'VAL_cagr': np.float64(0.065), 'VAL_maxdd': np.float64(-0.003), 'turn/d': np.float64(0.07), 'expo': np.float64(1.136)}
+{'name': 'R_carry_k1_in0.0002_top5', 'IS_sharpe': np.float64(2.329), 'IS_cagr': np.float64(0.473), 'IS_maxdd': np.float64(-0.278), 'VAL_sharpe': np.float64(5.938), 'VAL_cagr': np.float64(0.087), 'VAL_maxdd': np.float64(-0.004), 'turn/d': np.float64(0.099), 'expo': np.float64(1.532)}
+{'name': 'R_carry_k1_in0.0002_top10', 'IS_sharpe': np.float64(2.496), 'IS_cagr': np.float64(0.254), 'IS_maxdd': np.float64(-0.15), 'VAL_sharpe': np.float64(5.74), 'VAL_cagr': np.float64(0.049), 'VAL_maxdd': np.float64(-0.003), 'turn/d': np.float64(0.059), 'expo': np.float64(0.892)}
+{'name': 'R_carry_k1_in0.0003_top5', 'IS_sharpe': np.float64(2.882), 'IS_cagr': np.float64(0.302), 'IS_maxdd': np.float64(-0.144), 'VAL_sharpe': np.float64(0.085), 'VAL_cagr': np.float64(0.001), 'VAL_maxdd': np.float64(-0.017), 'turn/d': np.float64(0.133), 'expo': np.float64(0.626)}
+{'name': 'R_carry_k1_in0.0003_top10', 'IS_sharpe': np.float64(3.057), 'IS_cagr': np.float64(0.177), 'IS_maxdd': np.float64(-0.079), 'VAL_sharpe': np.float64(0.377), 'VAL_cagr': np.float64(0.002), 'VAL_maxdd': np.float64(-0.011), 'turn/d': np.float64(0.082), 'expo': np.float64(0.391)}
+{'name': 'R_carry_k3_in0.0001_top5', 'IS_sharpe': np.float64(2.994), 'IS_cagr': np.float64(0.427), 'IS_maxdd': np.float64(-0.18), 'VAL_sharpe': np.float64(6.89), 'VAL_cagr': np.float64(0.109), 'VAL_maxdd': np.float64(-0.003), 'turn/d': np.float64(0.085), 'expo': np.float64(1.736)}
+{'name': 'R_carry_k3_in0.0001_top10', 'IS_sharpe': np.float64(2.767), 'IS_cagr': np.float64(0.251), 'IS_maxdd': np.float64(-0.126), 'VAL_sharpe': np.float64(6.856), 'VAL_cagr': np.float64(0.067), 'VAL_maxdd': np.float64(-0.002), 'turn/d': np.float64(0.055), 'expo': np.float64(1.119)}
+{'name': 'R_carry_k3_in0.0002_top5', 'IS_sharpe': np.float64(2.845), 'IS_cagr': np.float64(0.385), 'IS_maxdd': np.float64(-0.178), 'VAL_sharpe': np.float64(6.134), 'VAL_cagr': np.float64(0.071), 'VAL_maxdd': np.float64(-0.001), 'turn/d': np.float64(0.061), 'expo': np.float64(1.108)}
+{'name': 'R_carry_k3_in0.0002_top10', 'IS_sharpe': np.float64(2.596), 'IS_cagr': np.float64(0.229), 'IS_maxdd': np.float64(-0.126), 'VAL_sharpe': np.float64(6.287), 'VAL_cagr': np.float64(0.047), 'VAL_maxdd': np.float64(-0.001), 'turn/d': np.float64(0.039), 'expo': np.float64(0.736)}
+{'name': 'R_carry_k3_in0.0003_top5', 'IS_sharpe': np.float64(4.233), 'IS_cagr': np.float64(0.319), 'IS_maxdd': np.float64(-0.075), 'VAL_sharpe': np.float64(3.221), 'VAL_cagr': np.float64(0.018), 'VAL_maxdd': np.float64(-0.003), 'turn/d': np.float64(0.058), 'expo': np.float64(0.55)}
+{'name': 'R_carry_k3_in0.0003_top10', 'IS_sharpe': np.float64(4.529), 'IS_cagr': np.float64(0.201), 'IS_maxdd': np.float64(-0.04), 'VAL_sharpe': np.float64(3.193), 'VAL_cagr': np.float64(0.012), 'VAL_maxdd': np.float64(-0.001), 'turn/d': np.float64(0.039), 'expo': np.float64(0.366)}
+{'name': 'S_trend_top10_10d_ls', 'IS_sharpe': np.float64(0.888), 'IS_cagr': np.float64(0.24), 'IS_maxdd': np.float64(-0.21), 'VAL_sharpe': np.float64(0.781), 'VAL_cagr': np.float64(0.173), 'VAL_maxdd': np.float64(-0.256), 'turn/d': np.float64(0.125), 'expo': np.float64(0.471)}
+{'name': 'T_trend_fundfilter_top10_10d_ls', 'IS_sharpe': np.float64(0.807), 'IS_cagr': np.float64(0.189), 'IS_maxdd': np.float64(-0.208), 'VAL_sharpe': np.float64(0.954), 'VAL_cagr': np.float64(0.219), 'VAL_maxdd': np.float64(-0.255), 'turn/d': np.float64(0.128), 'expo': np.float64(0.435)}
+{'name': 'S_trend_top10_10d_long', 'IS_sharpe': np.float64(0.866), 'IS_cagr': np.float64(0.158), 'IS_maxdd': np.float64(-0.245), 'VAL_sharpe': np.float64(1.52), 'VAL_cagr': np.float64(0.333), 'VAL_maxdd': np.float64(-0.204), 'turn/d': np.float64(0.062), 'expo': np.float64(0.249)}
+{'name': 'T_trend_fundfilter_top10_10d_long', 'IS_sharpe': np.float64(0.732), 'IS_cagr': np.float64(0.1), 'IS_maxdd': np.float64(-0.233), 'VAL_sharpe': np.float64(1.668), 'VAL_cagr': np.float64(0.366), 'VAL_maxdd': np.float64(-0.204), 'turn/d': np.float64(0.064), 'expo': np.float64(0.219)}
+{'name': 'S_trend_top10_20d_ls', 'IS_sharpe': np.float64(0.814), 'IS_cagr': np.float64(0.209), 'IS_maxdd': np.float64(-0.289), 'VAL_sharpe': np.float64(0.735), 'VAL_cagr': np.float64(0.156), 'VAL_maxdd': np.float64(-0.269), 'turn/d': np.float64(0.082), 'expo': np.float64(0.483)}
+{'name': 'T_trend_fundfilter_top10_20d_ls', 'IS_sharpe': np.float64(0.773), 'IS_cagr': np.float64(0.172), 'IS_maxdd': np.float64(-0.279), 'VAL_sharpe': np.float64(0.901), 'VAL_cagr': np.float64(0.198), 'VAL_maxdd': np.float64(-0.267), 'turn/d': np.float64(0.089), 'expo': np.float64(0.444)}
+{'name': 'S_trend_top10_20d_long', 'IS_sharpe': np.float64(0.743), 'IS_cagr': np.float64(0.14), 'IS_maxdd': np.float64(-0.325), 'VAL_sharpe': np.float64(1.455), 'VAL_cagr': np.float64(0.322), 'VAL_maxdd': np.float64(-0.203), 'turn/d': np.float64(0.04), 'expo': np.float64(0.254)}
+{'name': 'T_trend_fundfilter_top10_20d_long', 'IS_sharpe': np.float64(0.653), 'IS_cagr': np.float64(0.093), 'IS_maxdd': np.float64(-0.312), 'VAL_sharpe': np.float64(1.608), 'VAL_cagr': np.float64(0.356), 'VAL_maxdd': np.float64(-0.203), 'turn/d': np.float64(0.046), 'expo': np.float64(0.221)}
+{'name': 'S_trend_top10_50d_ls', 'IS_sharpe': np.float64(0.639), 'IS_cagr': np.float64(0.138), 'IS_maxdd': np.float64(-0.29), 'VAL_sharpe': np.float64(-1.493), 'VAL_cagr': np.float64(-0.292), 'VAL_maxdd': np.float64(-0.445), 'turn/d': np.float64(0.052), 'expo': np.float64(0.479)}
+{'name': 'T_trend_fundfilter_top10_50d_ls', 'IS_sharpe': np.float64(0.56), 'IS_cagr': np.float64(0.1), 'IS_maxdd': np.float64(-0.29), 'VAL_sharpe': np.float64(-1.337), 'VAL_cagr': np.float64(-0.261), 'VAL_maxdd': np.float64(-0.434), 'turn/d': np.float64(0.062), 'expo': np.float64(0.441)}
+{'name': 'S_trend_top10_50d_long', 'IS_sharpe': np.float64(0.623), 'IS_cagr': np.float64(0.114), 'IS_maxdd': np.float64(-0.361), 'VAL_sharpe': np.float64(0.228), 'VAL_cagr': np.float64(0.026), 'VAL_maxdd': np.float64(-0.305), 'turn/d': np.float64(0.027), 'expo': np.float64(0.273)}
+{'name': 'T_trend_fundfilter_top10_50d_long', 'IS_sharpe': np.float64(0.423), 'IS_cagr': np.float64(0.055), 'IS_maxdd': np.float64(-0.348), 'VAL_sharpe': np.float64(0.329), 'VAL_cagr': np.float64(0.048), 'VAL_maxdd': np.float64(-0.305), 'turn/d': np.float64(0.034), 'expo': np.float64(0.239)}
+{'name': 'S_trend_top30_10d_ls', 'IS_sharpe': np.float64(0.986), 'IS_cagr': np.float64(0.233), 'IS_maxdd': np.float64(-0.198), 'VAL_sharpe': np.float64(1.29), 'VAL_cagr': np.float64(0.304), 'VAL_maxdd': np.float64(-0.176), 'turn/d': np.float64(0.105), 'expo': np.float64(0.412)}
+{'name': 'T_trend_fundfilter_top30_10d_ls', 'IS_sharpe': np.float64(0.916), 'IS_cagr': np.float64(0.184), 'IS_maxdd': np.float64(-0.191), 'VAL_sharpe': np.float64(1.407), 'VAL_cagr': np.float64(0.329), 'VAL_maxdd': np.float64(-0.173), 'turn/d': np.float64(0.11), 'expo': np.float64(0.378)}
+{'name': 'S_trend_top30_10d_long', 'IS_sharpe': np.float64(1.004), 'IS_cagr': np.float64(0.164), 'IS_maxdd': np.float64(-0.232), 'VAL_sharpe': np.float64(1.841), 'VAL_cagr': np.float64(0.389), 'VAL_maxdd': np.float64(-0.188), 'turn/d': np.float64(0.052), 'expo': np.float64(0.206)}
+{'name': 'T_trend_fundfilter_top30_10d_long', 'IS_sharpe': np.float64(0.87), 'IS_cagr': np.float64(0.105), 'IS_maxdd': np.float64(-0.195), 'VAL_sharpe': np.float64(1.891), 'VAL_cagr': np.float64(0.391), 'VAL_maxdd': np.float64(-0.187), 'turn/d': np.float64(0.055), 'expo': np.float64(0.18)}
+{'name': 'S_trend_top30_20d_ls', 'IS_sharpe': np.float64(0.997), 'IS_cagr': np.float64(0.229), 'IS_maxdd': np.float64(-0.237), 'VAL_sharpe': np.float64(1.294), 'VAL_cagr': np.float64(0.301), 'VAL_maxdd': np.float64(-0.186), 'turn/d': np.float64(0.066), 'expo': np.float64(0.423)}
+{'name': 'T_trend_fundfilter_top30_20d_ls', 'IS_sharpe': np.float64(0.928), 'IS_cagr': np.float64(0.178), 'IS_maxdd': np.float64(-0.228), 'VAL_sharpe': np.float64(1.431), 'VAL_cagr': np.float64(0.328), 'VAL_maxdd': np.float64(-0.182), 'turn/d': np.float64(0.074), 'expo': np.float64(0.386)}
+{'name': 'S_trend_top30_20d_long', 'IS_sharpe': np.float64(0.948), 'IS_cagr': np.float64(0.16), 'IS_maxdd': np.float64(-0.259), 'VAL_sharpe': np.float64(1.841), 'VAL_cagr': np.float64(0.386), 'VAL_maxdd': np.float64(-0.181), 'turn/d': np.float64(0.032), 'expo': np.float64(0.205)}
+{'name': 'T_trend_fundfilter_top30_20d_long', 'IS_sharpe': np.float64(0.831), 'IS_cagr': np.float64(0.103), 'IS_maxdd': np.float64(-0.237), 'VAL_sharpe': np.float64(1.912), 'VAL_cagr': np.float64(0.393), 'VAL_maxdd': np.float64(-0.18), 'turn/d': np.float64(0.038), 'expo': np.float64(0.176)}
+{'name': 'S_trend_top30_50d_ls', 'IS_sharpe': np.float64(0.835), 'IS_cagr': np.float64(0.173), 'IS_maxdd': np.float64(-0.211), 'VAL_sharpe': np.float64(-0.064), 'VAL_cagr': np.float64(-0.032), 'VAL_maxdd': np.float64(-0.234), 'turn/d': np.float64(0.04), 'expo': np.float64(0.419)}
+{'name': 'T_trend_fundfilter_top30_50d_ls', 'IS_sharpe': np.float64(0.797), 'IS_cagr': np.float64(0.135), 'IS_maxdd': np.float64(-0.202), 'VAL_sharpe': np.float64(0.11), 'VAL_cagr': np.float64(0.003), 'VAL_maxdd': np.float64(-0.22), 'turn/d': np.float64(0.049), 'expo': np.float64(0.383)}
+{'name': 'S_trend_top30_50d_long', 'IS_sharpe': np.float64(0.825), 'IS_cagr': np.float64(0.138), 'IS_maxdd': np.float64(-0.26), 'VAL_sharpe': np.float64(1.128), 'VAL_cagr': np.float64(0.203), 'VAL_maxdd': np.float64(-0.204), 'turn/d': np.float64(0.019), 'expo': np.float64(0.204)}
+{'name': 'T_trend_fundfilter_top30_50d_long', 'IS_sharpe': np.float64(0.677), 'IS_cagr': np.float64(0.08), 'IS_maxdd': np.float64(-0.25), 'VAL_sharpe': np.float64(1.195), 'VAL_cagr': np.float64(0.211), 'VAL_maxdd': np.float64(-0.203), 'turn/d': np.float64(0.026), 'expo': np.float64(0.175)}
+                                   IS_sharpe  IS_cagr  IS_maxdd  VAL_sharpe  VAL_cagr  VAL_maxdd  turn/d   expo
+name                                                                                                           
+R_carry_k1_in0.0001_top5               2.353    0.489    -0.283       6.513     0.118     -0.006   0.115  1.937
+R_carry_k1_in0.0001_top10              2.559    0.263    -0.150       6.365     0.065     -0.003   0.070  1.136
+R_carry_k1_in0.0002_top5               2.329    0.473    -0.278       5.938     0.087     -0.004   0.099  1.532
+R_carry_k1_in0.0002_top10              2.496    0.254    -0.150       5.740     0.049     -0.003   0.059  0.892
+R_carry_k1_in0.0003_top5               2.882    0.302    -0.144       0.085     0.001     -0.017   0.133  0.626
+R_carry_k1_in0.0003_top10              3.057    0.177    -0.079       0.377     0.002     -0.011   0.082  0.391
+R_carry_k3_in0.0001_top5               2.994    0.427    -0.180       6.890     0.109     -0.003   0.085  1.736
+R_carry_k3_in0.0001_top10              2.767    0.251    -0.126       6.856     0.067     -0.002   0.055  1.119
+R_carry_k3_in0.0002_top5               2.845    0.385    -0.178       6.134     0.071     -0.001   0.061  1.108
+R_carry_k3_in0.0002_top10              2.596    0.229    -0.126       6.287     0.047     -0.001   0.039  0.736
+R_carry_k3_in0.0003_top5               4.233    0.319    -0.075       3.221     0.018     -0.003   0.058  0.550
+R_carry_k3_in0.0003_top10              4.529    0.201    -0.040       3.193     0.012     -0.001   0.039  0.366
+S_trend_top10_10d_ls                   0.888    0.240    -0.210       0.781     0.173     -0.256   0.125  0.471
+T_trend_fundfilter_top10_10d_ls        0.807    0.189    -0.208       0.954     0.219     -0.255   0.128  0.435
+S_trend_top10_10d_long                 0.866    0.158    -0.245       1.520     0.333     -0.204   0.062  0.249
+T_trend_fundfilter_top10_10d_long      0.732    0.100    -0.233       1.668     0.366     -0.204   0.064  0.219
+S_trend_top10_20d_ls                   0.814    0.209    -0.289       0.735     0.156     -0.269   0.082  0.483
+T_trend_fundfilter_top10_20d_ls        0.773    0.172    -0.279       0.901     0.198     -0.267   0.089  0.444
+S_trend_top10_20d_long                 0.743    0.140    -0.325       1.455     0.322     -0.203   0.040  0.254
+T_trend_fundfilter_top10_20d_long      0.653    0.093    -0.312       1.608     0.356     -0.203   0.046  0.221
+S_trend_top10_50d_ls                   0.639    0.138    -0.290      -1.493    -0.292     -0.445   0.052  0.479
+T_trend_fundfilter_top10_50d_ls        0.560    0.100    -0.290      -1.337    -0.261     -0.434   0.062  0.441
+S_trend_top10_50d_long                 0.623    0.114    -0.361       0.228     0.026     -0.305   0.027  0.273
+T_trend_fundfilter_top10_50d_long      0.423    0.055    -0.348       0.329     0.048     -0.305   0.034  0.239
+S_trend_top30_10d_ls                   0.986    0.233    -0.198       1.290     0.304     -0.176   0.105  0.412
+T_trend_fundfilter_top30_10d_ls        0.916    0.184    -0.191       1.407     0.329     -0.173   0.110  0.378
+S_trend_top30_10d_long                 1.004    0.164    -0.232       1.841     0.389     -0.188   0.052  0.206
+T_trend_fundfilter_top30_10d_long      0.870    0.105    -0.195       1.891     0.391     -0.187   0.055  0.180
+S_trend_top30_20d_ls                   0.997    0.229    -0.237       1.294     0.301     -0.186   0.066  0.423
+T_trend_fundfilter_top30_20d_ls        0.928    0.178    -0.228       1.431     0.328     -0.182   0.074  0.386
+S_trend_top30_20d_long                 0.948    0.160    -0.259       1.841     0.386     -0.181   0.032  0.205
+T_trend_fundfilter_top30_20d_long      0.831    0.103    -0.237       1.912     0.393     -0.180   0.038  0.176
+S_trend_top30_50d_ls                   0.835    0.173    -0.211      -0.064    -0.032     -0.234   0.040  0.419
+T_trend_fundfilter_top30_50d_ls        0.797    0.135    -0.202       0.110     0.003     -0.220   0.049  0.383
+S_trend_top30_50d_long                 0.825    0.138    -0.260       1.128     0.203     -0.204   0.019  0.204
+T_trend_fundfilter_top30_50d_long      0.677    0.080    -0.250       1.195     0.211     -0.203   0.026  0.175

@@ -1,0 +1,81 @@
+{'family': 'A_dilution', 'name': 'n30_skip1', 'sharpe': np.float64(0.939), 'cagr': np.float64(0.247), 'maxdd': -0.213, 'y2022': np.float64(0.276), 'y2023': np.float64(0.22), 'trades': 127}
+{'family': 'A_dilution', 'name': 'n30_skip1_2xfee', 'sharpe': np.float64(0.887), 'cagr': np.float64(0.23), 'maxdd': -0.217, 'y2022': np.float64(0.267), 'y2023': np.float64(0.193), 'trades': 127}
+{'family': 'A_dilution', 'name': 'n30_skip7', 'sharpe': np.float64(0.803), 'cagr': np.float64(0.177), 'maxdd': -0.224, 'y2022': np.float64(0.233), 'y2023': np.float64(0.125), 'trades': 126}
+{'family': 'A_dilution', 'name': 'n30_skip7_2xfee', 'sharpe': np.float64(0.743), 'cagr': np.float64(0.16), 'maxdd': -0.228, 'y2022': np.float64(0.225), 'y2023': np.float64(0.1), 'trades': 126}
+{'family': 'A_dilution', 'name': 'n60_skip1', 'sharpe': np.float64(0.802), 'cagr': np.float64(0.22), 'maxdd': -0.291, 'y2022': np.float64(0.064), 'y2023': np.float64(0.399), 'trades': 137}
+{'family': 'A_dilution', 'name': 'n60_skip1_2xfee', 'sharpe': np.float64(0.752), 'cagr': np.float64(0.202), 'maxdd': -0.298, 'y2022': np.float64(0.054), 'y2023': np.float64(0.37), 'trades': 137}
+{'family': 'A_dilution', 'name': 'n60_skip7', 'sharpe': np.float64(0.791), 'cagr': np.float64(0.211), 'maxdd': -0.313, 'y2022': np.float64(0.05), 'y2023': np.float64(0.395), 'trades': 136}
+{'family': 'A_dilution', 'name': 'n60_skip7_2xfee', 'sharpe': np.float64(0.739), 'cagr': np.float64(0.192), 'maxdd': -0.319, 'y2022': np.float64(0.041), 'y2023': np.float64(0.366), 'trades': 136}
+{'family': 'A_dilution', 'name': 'n90_skip1', 'sharpe': np.float64(0.541), 'cagr': np.float64(0.125), 'maxdd': -0.313, 'y2022': np.float64(0.112), 'y2023': np.float64(0.138), 'trades': 141}
+{'family': 'A_dilution', 'name': 'n90_skip1_2xfee', 'sharpe': np.float64(0.489), 'cagr': np.float64(0.107), 'maxdd': -0.319, 'y2022': np.float64(0.098), 'y2023': np.float64(0.117), 'trades': 141}
+{'family': 'A_dilution', 'name': 'n90_skip7', 'sharpe': np.float64(0.499), 'cagr': np.float64(0.11), 'maxdd': -0.331, 'y2022': np.float64(0.079), 'y2023': np.float64(0.141), 'trades': 140}
+{'family': 'A_dilution', 'name': 'n90_skip7_2xfee', 'sharpe': np.float64(0.446), 'cagr': np.float64(0.093), 'maxdd': -0.337, 'y2022': np.float64(0.066), 'y2023': np.float64(0.119), 'trades': 140}
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+{'family': 'B_btc_vs_alts', 'name': 'ma10', 'sharpe': np.float64(0.616), 'cagr': np.float64(0.103), 'maxdd': -0.206, 'y2022': np.float64(0.108), 'y2023': np.float64(0.098), 'trades': None}
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+{'family': 'B_btc_vs_alts', 'name': 'ma20', 'sharpe': np.float64(0.755), 'cagr': np.float64(0.136), 'maxdd': -0.191, 'y2022': np.float64(0.124), 'y2023': np.float64(0.148), 'trades': None}
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+{'family': 'B_btc_vs_alts', 'name': 'ma50', 'sharpe': np.float64(0.542), 'cagr': np.float64(0.091), 'maxdd': -0.184, 'y2022': np.float64(0.142), 'y2023': np.float64(0.042), 'trades': None}
+/home/user/freqtrade/user_data/edge_research/modern_lab.py:55: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  alt_w = U.astype(float).div(U.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+{'family': 'B_btc_vs_alts', 'name': 'always_on', 'sharpe': np.float64(0.389), 'cagr': np.float64(0.066), 'maxdd': -0.266, 'y2022': np.float64(0.178), 'y2023': np.float64(-0.035), 'trades': None}
+{'family': 'C_majors_trend', 'name': 'ema_5_20_tv0.15', 'sharpe': np.float64(0.417), 'cagr': np.float64(0.04), 'maxdd': -0.137, 'y2022': np.float64(-0.123), 'y2023': np.float64(0.233), 'trades': None}
+{'family': 'C_majors_trend', 'name': 'ema_5_20_tv0.25', 'sharpe': np.float64(0.422), 'cagr': np.float64(0.061), 'maxdd': -0.221, 'y2022': np.float64(-0.2), 'y2023': np.float64(0.407), 'trades': None}
+{'family': 'C_majors_trend', 'name': 'ema_10_50_tv0.15', 'sharpe': np.float64(0.191), 'cagr': np.float64(0.014), 'maxdd': -0.144, 'y2022': np.float64(-0.103), 'y2023': np.float64(0.148), 'trades': None}
+{'family': 'C_majors_trend', 'name': 'ema_10_50_tv0.25', 'sharpe': np.float64(0.204), 'cagr': np.float64(0.021), 'maxdd': -0.231, 'y2022': np.float64(-0.168), 'y2023': np.float64(0.252), 'trades': None}
+{'family': 'C_majors_trend', 'name': 'donchian_10_20_tv0.15', 'sharpe': np.float64(0.334), 'cagr': np.float64(0.028), 'maxdd': -0.103, 'y2022': np.float64(-0.096), 'y2023': np.float64(0.169), 'trades': None}
+{'family': 'C_majors_trend', 'name': 'donchian_10_20_tv0.25', 'sharpe': np.float64(0.337), 'cagr': np.float64(0.042), 'maxdd': -0.167, 'y2022': np.float64(-0.157), 'y2023': np.float64(0.288), 'trades': None}
+{'family': 'C_majors_trend', 'name': 'donchian_20_55_tv0.15', 'sharpe': np.float64(0.706), 'cagr': np.float64(0.055), 'maxdd': -0.067, 'y2022': np.float64(-0.061), 'y2023': np.float64(0.185), 'trades': None}
+{'family': 'C_majors_trend', 'name': 'donchian_20_55_tv0.25', 'sharpe': np.float64(0.707), 'cagr': np.float64(0.089), 'maxdd': -0.109, 'y2022': np.float64(-0.1), 'y2023': np.float64(0.318), 'trades': None}
+{'family': 'D_intraday_rev', 'name': 'n24_k2.0_mb12', 'sharpe': np.float64(-9.559), 'cagr': np.float64(-0.822), 'maxdd': -0.968, 'y2022': np.float64(-0.862), 'y2023': np.float64(-0.77), 'trades': 47299}
+{'family': 'D_intraday_rev', 'name': 'n24_k2.0_mb36', 'sharpe': np.float64(-8.714), 'cagr': np.float64(-0.84), 'maxdd': -0.975, 'y2022': np.float64(-0.881), 'y2023': np.float64(-0.784), 'trades': 41147}
+{'family': 'D_intraday_rev', 'name': 'n24_k3.0_mb12', 'sharpe': np.float64(-4.036), 'cagr': np.float64(-0.329), 'maxdd': -0.554, 'y2022': np.float64(-0.347), 'y2023': np.float64(-0.31), 'trades': 9125}
+{'family': 'D_intraday_rev', 'name': 'n24_k3.0_mb36', 'sharpe': np.float64(-3.233), 'cagr': np.float64(-0.312), 'maxdd': -0.536, 'y2022': np.float64(-0.319), 'y2023': np.float64(-0.305), 'trades': 8772}
+{'family': 'D_intraday_rev', 'name': 'n48_k2.0_mb12', 'sharpe': np.float64(-8.481), 'cagr': np.float64(-0.767), 'maxdd': -0.946, 'y2022': np.float64(-0.81), 'y2023': np.float64(-0.714), 'trades': 37227}
+{'family': 'D_intraday_rev', 'name': 'n48_k2.0_mb36', 'sharpe': np.float64(-6.364), 'cagr': np.float64(-0.728), 'maxdd': -0.927, 'y2022': np.float64(-0.772), 'y2023': np.float64(-0.676), 'trades': 31951}
+{'family': 'D_intraday_rev', 'name': 'n48_k3.0_mb12', 'sharpe': np.float64(-4.008), 'cagr': np.float64(-0.361), 'maxdd': -0.598, 'y2022': np.float64(-0.362), 'y2023': np.float64(-0.361), 'trades': 11573}
+{'family': 'D_intraday_rev', 'name': 'n48_k3.0_mb36', 'sharpe': np.float64(-3.345), 'cagr': np.float64(-0.384), 'maxdd': -0.631, 'y2022': np.float64(-0.395), 'y2023': np.float64(-0.372), 'trades': 11323}
+{'family': 'D_intraday_rev', 'name': 'n96_k2.0_mb12', 'sharpe': np.float64(-8.033), 'cagr': np.float64(-0.747), 'maxdd': -0.936, 'y2022': np.float64(-0.788), 'y2023': np.float64(-0.698), 'trades': 30911}
+{'family': 'D_intraday_rev', 'name': 'n96_k2.0_mb36', 'sharpe': np.float64(-5.628), 'cagr': np.float64(-0.675), 'maxdd': -0.896, 'y2022': np.float64(-0.729), 'y2023': np.float64(-0.61), 'trades': 22200}
+{'family': 'D_intraday_rev', 'name': 'n96_k3.0_mb12', 'sharpe': np.float64(-4.387), 'cagr': np.float64(-0.353), 'maxdd': -0.582, 'y2022': np.float64(-0.394), 'y2023': np.float64(-0.308), 'trades': 10291}
+{'family': 'D_intraday_rev', 'name': 'n96_k3.0_mb36', 'sharpe': np.float64(-3.304), 'cagr': np.float64(-0.372), 'maxdd': -0.611, 'y2022': np.float64(-0.384), 'y2023': np.float64(-0.361), 'trades': 9440}
+            family                   name  sharpe   cagr  maxdd  y2022  y2023   trades
+0       A_dilution              n30_skip1   0.939  0.247 -0.213  0.276  0.220    127.0
+1       A_dilution        n30_skip1_2xfee   0.887  0.230 -0.217  0.267  0.193    127.0
+2       A_dilution              n30_skip7   0.803  0.177 -0.224  0.233  0.125    126.0
+3       A_dilution        n30_skip7_2xfee   0.743  0.160 -0.228  0.225  0.100    126.0
+4       A_dilution              n60_skip1   0.802  0.220 -0.291  0.064  0.399    137.0
+5       A_dilution        n60_skip1_2xfee   0.752  0.202 -0.298  0.054  0.370    137.0
+6       A_dilution              n60_skip7   0.791  0.211 -0.313  0.050  0.395    136.0
+7       A_dilution        n60_skip7_2xfee   0.739  0.192 -0.319  0.041  0.366    136.0
+8       A_dilution              n90_skip1   0.541  0.125 -0.313  0.112  0.138    141.0
+9       A_dilution        n90_skip1_2xfee   0.489  0.107 -0.319  0.098  0.117    141.0
+10      A_dilution              n90_skip7   0.499  0.110 -0.331  0.079  0.141    140.0
+11      A_dilution        n90_skip7_2xfee   0.446  0.093 -0.337  0.066  0.119    140.0
+12   B_btc_vs_alts                   ma10   0.616  0.103 -0.206  0.108  0.098      NaN
+13   B_btc_vs_alts                   ma20   0.755  0.136 -0.191  0.124  0.148      NaN
+14   B_btc_vs_alts                   ma50   0.542  0.091 -0.184  0.142  0.042      NaN
+15   B_btc_vs_alts              always_on   0.389  0.066 -0.266  0.178 -0.035      NaN
+16  C_majors_trend        ema_5_20_tv0.15   0.417  0.040 -0.137 -0.123  0.233      NaN
+17  C_majors_trend        ema_5_20_tv0.25   0.422  0.061 -0.221 -0.200  0.407      NaN
+18  C_majors_trend       ema_10_50_tv0.15   0.191  0.014 -0.144 -0.103  0.148      NaN
+19  C_majors_trend       ema_10_50_tv0.25   0.204  0.021 -0.231 -0.168  0.252      NaN
+20  C_majors_trend  donchian_10_20_tv0.15   0.334  0.028 -0.103 -0.096  0.169      NaN
+21  C_majors_trend  donchian_10_20_tv0.25   0.337  0.042 -0.167 -0.157  0.288      NaN
+22  C_majors_trend  donchian_20_55_tv0.15   0.706  0.055 -0.067 -0.061  0.185      NaN
+23  C_majors_trend  donchian_20_55_tv0.25   0.707  0.089 -0.109 -0.100  0.318      NaN
+24  D_intraday_rev          n24_k2.0_mb12  -9.559 -0.822 -0.968 -0.862 -0.770  47299.0
+25  D_intraday_rev          n24_k2.0_mb36  -8.714 -0.840 -0.975 -0.881 -0.784  41147.0
+26  D_intraday_rev          n24_k3.0_mb12  -4.036 -0.329 -0.554 -0.347 -0.310   9125.0
+27  D_intraday_rev          n24_k3.0_mb36  -3.233 -0.312 -0.536 -0.319 -0.305   8772.0
+28  D_intraday_rev          n48_k2.0_mb12  -8.481 -0.767 -0.946 -0.810 -0.714  37227.0
+29  D_intraday_rev          n48_k2.0_mb36  -6.364 -0.728 -0.927 -0.772 -0.676  31951.0
+30  D_intraday_rev          n48_k3.0_mb12  -4.008 -0.361 -0.598 -0.362 -0.361  11573.0
+31  D_intraday_rev          n48_k3.0_mb36  -3.345 -0.384 -0.631 -0.395 -0.372  11323.0
+32  D_intraday_rev          n96_k2.0_mb12  -8.033 -0.747 -0.936 -0.788 -0.698  30911.0
+33  D_intraday_rev          n96_k2.0_mb36  -5.628 -0.675 -0.896 -0.729 -0.610  22200.0
+34  D_intraday_rev          n96_k3.0_mb12  -4.387 -0.353 -0.582 -0.394 -0.308  10291.0
+35  D_intraday_rev          n96_k3.0_mb36  -3.304 -0.372 -0.611 -0.384 -0.361   9440.0

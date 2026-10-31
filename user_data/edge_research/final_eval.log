@@ -1,0 +1,100 @@
+
+#### 1. Locked candidate, all splits
+== FundingContrarian_top50_3d_q0.2  (entries=11167)
+       ret   cagr  sharpe  sortino  maxdd  pf_daily     days  turn/d  expo
+IS   4.143  0.725   2.199    3.418 -0.195     1.376 1096.000   0.603 0.945
+VAL  0.428  0.428   1.775    2.760 -0.146     1.291  365.000   0.621 0.988
+OOS -0.476 -0.367  -1.502   -2.061 -0.554     0.804  516.000   0.692 0.981
+==   ...same at 2x costs  (entries=11167)
+       ret   cagr  sharpe  sortino  maxdd  pf_daily     days  turn/d  expo
+IS   2.238  0.479   1.613    2.503 -0.246     1.264 1096.000   0.603 0.945
+VAL  0.219  0.219   1.032    1.600 -0.172     1.159  365.000   0.621 0.988
+OOS -0.592 -0.469  -2.137   -2.931 -0.645     0.733  516.000   0.692 0.981
+==   ...price only (no fees, no funding)  (entries=11167)
+       ret   cagr  sharpe  sortino  maxdd  pf_daily     days  turn/d  expo
+IS   3.077  0.597   1.914    2.950 -0.215     1.320 1096.000   0.603 0.945
+VAL  0.316  0.316   1.401    2.136 -0.145     1.225  365.000   0.621 0.988
+OOS -0.462 -0.355  -1.429   -1.946 -0.551     0.812  516.000   0.692 0.981
+
+#### 2. freqtrade replica (hysteresis 0.20/0.30, 5%/position)
+== Hysteresis replica  (entries=8517)
+       ret   cagr  sharpe  sortino  maxdd  pf_daily     days  turn/d  expo
+IS   7.028  1.001   2.571    3.906 -0.222     1.463 1096.000   0.390 1.057
+VAL  0.524  0.524   1.873    3.048 -0.188     1.301  365.000   0.468 1.235
+OOS -0.641 -0.515  -2.306   -3.240 -0.668     0.720  516.000   0.497 1.180
+
+#### 3. Parameter plateau on OOS (all 27 neighbours)
+    top_n  fund_days     q    ret   cagr  sharpe  sortino  maxdd  pf_daily  days
+0      30       2.00  0.10 -0.263 -0.194  -0.173   -0.253 -0.453     0.974   516
+1      30       2.00  0.20 -0.289 -0.214  -0.576   -0.824 -0.420     0.919   516
+2      30       2.00  0.33 -0.437 -0.334  -1.501   -2.132 -0.526     0.805   516
+3      30       3.00  0.10 -0.105 -0.075   0.091    0.121 -0.394     1.014   516
+4      30       3.00  0.20 -0.158 -0.115  -0.233   -0.341 -0.285     0.968   516
+5      30       3.00  0.33 -0.415 -0.315  -1.415   -1.912 -0.494     0.811   516
+6      30       4.67  0.10  1.398  0.857   1.503    1.975 -0.316     1.251   516
+7      30       4.67  0.20 -0.179 -0.130  -0.321   -0.449 -0.305     0.955   516
+8      30       4.67  0.33 -0.359 -0.270  -1.184   -1.549 -0.422     0.840   516
+9      50       2.00  0.10 -0.646 -0.520  -1.487   -1.942 -0.691     0.801   516
+10     50       2.00  0.20 -0.622 -0.498  -2.232   -2.780 -0.634     0.714   516
+11     50       2.00  0.33 -0.628 -0.503  -3.213   -3.723 -0.636     0.607   516
+12     50       3.00  0.10 -0.656 -0.529  -1.540   -2.069 -0.697     0.800   516
+13     50       3.00  0.20 -0.476 -0.367  -1.502   -2.061 -0.554     0.804   516
+14     50       3.00  0.33 -0.567 -0.447  -3.009   -3.928 -0.585     0.648   516
+15     50       4.67  0.10 -0.315 -0.235  -0.420   -0.549 -0.525     0.940   516
+16     50       4.67  0.20 -0.436 -0.333  -1.366   -1.843 -0.516     0.819   516
+17     50       4.67  0.33 -0.470 -0.362  -2.230   -3.080 -0.548     0.726   516
+18    100       2.00  0.10 -0.420 -0.320  -0.900   -1.144 -0.585     0.875   516
+19    100       2.00  0.20 -0.256 -0.189  -0.715   -0.857 -0.332     0.890   516
+20    100       2.00  0.33 -0.355 -0.267  -2.103   -3.027 -0.420     0.738   516
+21    100       3.00  0.10 -0.276 -0.204  -0.488   -0.635 -0.502     0.931   516
+22    100       3.00  0.20 -0.138 -0.100  -0.333   -0.410 -0.352     0.948   516
+23    100       3.00  0.33 -0.298 -0.222  -1.767   -2.538 -0.356     0.777   516
+24    100       4.67  0.10  0.052  0.037   0.274    0.365 -0.391     1.040   516
+25    100       4.67  0.20 -0.190 -0.139  -0.604   -0.780 -0.325     0.913   516
+26    100       4.67  0.33 -0.236 -0.173  -1.331   -1.786 -0.312     0.827   516
+OOS: 7% of neighbours profitable, median Sharpe -1.18
+
+#### 4. Quarterly returns (locked candidate)
+/home/user/freqtrade/user_data/edge_research/edge_lab.py:169: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  return (1 + res.pnl).groupby(res.pnl.index.to_period("Q")).prod() - 1
+date
+2021Q1    0.694
+2021Q2    0.258
+2021Q3    0.182
+2021Q4   -0.080
+2022Q1    0.236
+2022Q2    0.018
+2022Q3   -0.095
+2022Q4   -0.035
+2023Q1    0.100
+2023Q2    0.166
+2023Q3    0.044
+2023Q4    0.066
+2024Q1   -0.180
+2024Q2   -0.107
+2024Q3   -0.019
+2024Q4    0.029
+2025Q1   -0.124
+2025Q2   -0.190
+Freq: Q-DEC
+positive quarters: 56%
+
+#### 5. Market exposure
+corr to BTC: -0.01  beta: -0.00
+corr to EW top50 alts: 0.02  beta: 0.01
+
+#### 6. Permutation test (OOS): shuffle funding across coins each day
+observed OOS Sharpe -1.50; null mean -2.28 sd 0.84; p = 0.244
+
+#### 7. Bootstrap 95% CI of OOS Sharpe (stationary block bootstrap, 10d blocks)
+OOS Sharpe 95% CI: [-3.19, 0.24]
+
+#### 8. Survivorship stress: delisted coins are absent from the dataset
+long-leg drag 10%/yr -> OOS CAGR -39.75%, Sharpe -1.68
+long-leg drag 20%/yr -> OOS CAGR -42.69%, Sharpe -1.86
+long-leg drag 30%/yr -> OOS CAGR -45.48%, Sharpe -2.04
+
+#### 9. Return decomposition per split (price / fees / funding)
+IS: price +1.516  fees -0.463  funding +0.695  (sum of bar returns)
+VAL: price +0.296  fees -0.159  funding +0.240  (sum of bar returns)
+OOS: price -0.569  fees -0.250  funding +0.225  (sum of bar returns)

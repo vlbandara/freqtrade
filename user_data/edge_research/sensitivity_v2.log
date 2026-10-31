@@ -1,0 +1,12 @@
+cascade stream (WF pick) by year:
+  2022: return   35.8%  Sharpe  1.13
+  2023: return   18.5%  Sharpe  2.75
+  2024: return    1.9%  Sharpe  0.20
+  2025: return   -6.7%  Sharpe -0.18
+
+leverage-cap sensitivity of the walk-forward portfolio (2022-01..2025-05):
+  cap 1x: CAGR   4.9%  Sharpe  4.24  maxDD  -0.8%
+  cap 2x: CAGR  10.1%  Sharpe  4.24  maxDD  -1.6%
+  cap 3x: CAGR  15.5%  Sharpe  4.24  maxDD  -2.4%
+  cap 4x: CAGR  21.1%  Sharpe  4.24  maxDD  -3.3%
+  cap 5x: CAGR  25.8%  Sharpe  4.17  maxDD  -4.0%

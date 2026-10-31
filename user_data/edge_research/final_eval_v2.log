@@ -1,0 +1,86 @@
+building stream grids ...
+  carry_u50_k10_thr0.0001
+  carry_u50_k10_thr0.0002
+  carry_u50_k20_thr0.0001
+  carry_u50_k20_thr0.0002
+  carry_u100_k10_thr0.0001
+  carry_u100_k10_thr0.0002
+  carry_u100_k20_thr0.0001
+  carry_u100_k20_thr0.0002
+
+#### Walk-forward selections (made with pre-year data only)
+ year                   carry            cascade  vol_target  avg_lev
+ 2022 carry_u50_k10_thr0.0001  casc_f-0.02_h6_n5        0.12      3.0
+ 2023 carry_u50_k10_thr0.0001  casc_f-0.03_h6_n5        0.12      3.0
+ 2024 carry_u50_k10_thr0.0001  casc_f-0.03_h6_n5        0.12      3.0
+ 2025 carry_u50_k10_thr0.0001 casc_f-0.02_h12_n5        0.08      3.0
+
+#### Walk-forward result 2022-01 .. 2025-05 (out-of-sample of the selection procedure)
+/home/user/freqtrade/user_data/edge_research/final_eval_v2.py:116: UserWarning: Converting to PeriodArray/Index representation will drop timezone information.
+  m = x.groupby(x.index.to_period("M")).apply(lambda v: (1 + v).prod() - 1)
+WF portfolio (taker costs)         CAGR   15.5%  total   63.5%  Sharpe  4.24  Sortino  6.73  maxDD  -2.4%  months+  68%  worst month  -1.4%
+WF portfolio at 2x costs           CAGR    6.2%  total   23.0%  Sharpe  1.92  Sortino  2.42  maxDD  -5.1%  months+  39%  worst month  -2.2%
+  carry stream alone (WF picks)    CAGR    4.7%  total   17.1%  Sharpe  5.39  Sortino  9.99  maxDD  -0.7%  months+  54%  worst month  -0.2%
+  cascade stream alone (WF picks)  CAGR   13.2%  total   52.9%  Sharpe  0.63  Sortino  0.52  maxDD -26.0%  months+  59%  worst month -16.6%
+
+#### Calendar years (WF)
+date
+2022    0.0018
+2023    0.2009
+2024    0.3411
+2025    0.0131
+
+#### Monthly returns (WF)
+date
+2022-01   -0.0035
+2022-02   -0.0136
+2022-03   -0.0029
+2022-04    0.0089
+2022-05   -0.0036
+2022-06    0.0116
+2022-07    0.0003
+2022-08    0.0035
+2022-09    0.0020
+2022-10   -0.0002
+2022-11    0.0005
+2022-12   -0.0010
+2023-01    0.0138
+2023-02    0.0167
+2023-03    0.0155
+2023-04    0.0010
+2023-05   -0.0013
+2023-06    0.0219
+2023-07   -0.0007
+2023-08    0.0004
+2023-09    0.0000
+2023-10    0.0013
+2023-11    0.0328
+2023-12    0.0863
+2024-01    0.0061
+2024-02    0.0557
+2024-03    0.1630
+2024-04    0.0196
+2024-05   -0.0093
+2024-06    0.0109
+2024-07    0.0100
+2024-08    0.0039
+2024-09   -0.0013
+2024-10    0.0001
+2024-11    0.0283
+2024-12    0.0211
+2025-01   -0.0005
+2025-02    0.0096
+2025-03    0.0051
+2025-04    0.0024
+2025-05   -0.0034
+Freq: M
+
+#### Stream correlation (daily, 2021+)
+carry vs cascade: 0.100
+WF portfolio vs BTC: -0.091
+
+#### Bootstrap max drawdown of the WF portfolio (10-day blocks, 5000 paths)
+median -1.6%, 95th pct -2.7%, 99th pct -3.2%
+
+#### Deflated Sharpe ratio (Bailey & Lopez de Prado), daily
+trials 36, annual SR 4.24, SR* hurdle 4.38, DSR = 0.3677

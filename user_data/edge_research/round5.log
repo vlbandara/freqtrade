@@ -1,0 +1,76 @@
+{'name': 'BTC_buyhold', 'IS_sharpe': np.float64(0.524), 'IS_cagr': np.float64(0.11), 'IS_maxdd': np.float64(-0.789), 'VAL_sharpe': np.float64(2.168), 'VAL_cagr': np.float64(1.364), 'VAL_maxdd': np.float64(-0.207), 'expo': np.float64(1.0)}
+{'name': 'BTC_trend20_long', 'IS_sharpe': np.float64(0.871), 'IS_cagr': np.float64(0.362), 'IS_maxdd': np.float64(-0.561), 'VAL_sharpe': np.float64(1.754), 'VAL_cagr': np.float64(0.737), 'VAL_maxdd': np.float64(-0.19), 'expo': np.float64(0.574)}
+{'name': 'BTC_trend20_ls', 'IS_sharpe': np.float64(0.615), 'IS_cagr': np.float64(0.21), 'IS_maxdd': np.float64(-0.574), 'VAL_sharpe': np.float64(0.631), 'VAL_cagr': np.float64(0.198), 'VAL_maxdd': np.float64(-0.415), 'expo': np.float64(0.975)}
+{'name': 'BTC_trend20_long_notfroth0.8', 'IS_sharpe': np.float64(0.578), 'IS_cagr': np.float64(0.156), 'IS_maxdd': np.float64(-0.545), 'VAL_sharpe': np.float64(1.588), 'VAL_cagr': np.float64(0.375), 'VAL_maxdd': np.float64(-0.073), 'expo': np.float64(0.287)}
+{'name': 'BTC_trend20_long_notfroth0.9', 'IS_sharpe': np.float64(0.477), 'IS_cagr': np.float64(0.116), 'IS_maxdd': np.float64(-0.545), 'VAL_sharpe': np.float64(1.618), 'VAL_cagr': np.float64(0.465), 'VAL_maxdd': np.float64(-0.12), 'expo': np.float64(0.369)}
+{'name': 'BTC_trend50_long', 'IS_sharpe': np.float64(0.974), 'IS_cagr': np.float64(0.435), 'IS_maxdd': np.float64(-0.519), 'VAL_sharpe': np.float64(1.219), 'VAL_cagr': np.float64(0.468), 'VAL_maxdd': np.float64(-0.263), 'expo': np.float64(0.608)}
+{'name': 'BTC_trend50_ls', 'IS_sharpe': np.float64(0.758), 'IS_cagr': np.float64(0.349), 'IS_maxdd': np.float64(-0.54), 'VAL_sharpe': np.float64(-0.095), 'VAL_cagr': np.float64(-0.128), 'VAL_maxdd': np.float64(-0.498), 'expo': np.float64(0.989)}
+{'name': 'BTC_trend50_long_notfroth0.8', 'IS_sharpe': np.float64(0.892), 'IS_cagr': np.float64(0.306), 'IS_maxdd': np.float64(-0.499), 'VAL_sharpe': np.float64(1.033), 'VAL_cagr': np.float64(0.26), 'VAL_maxdd': np.float64(-0.177), 'expo': np.float64(0.322)}
+{'name': 'BTC_trend50_long_notfroth0.9', 'IS_sharpe': np.float64(0.764), 'IS_cagr': np.float64(0.254), 'IS_maxdd': np.float64(-0.499), 'VAL_sharpe': np.float64(1.016), 'VAL_cagr': np.float64(0.289), 'VAL_maxdd': np.float64(-0.214), 'expo': np.float64(0.414)}
+{'name': 'BTC_capitulation_long_p0.1', 'IS_sharpe': np.float64(0.413), 'IS_cagr': np.float64(0.083), 'IS_maxdd': np.float64(-0.351), 'VAL_sharpe': np.float64(0.119), 'VAL_cagr': np.float64(0.005), 'VAL_maxdd': np.float64(-0.032), 'expo': np.float64(0.085)}
+{'name': 'BTC_capitulation_long_p0.2', 'IS_sharpe': np.float64(0.067), 'IS_cagr': np.float64(-0.046), 'IS_maxdd': np.float64(-0.532), 'VAL_sharpe': np.float64(1.649), 'VAL_cagr': np.float64(0.288), 'VAL_maxdd': np.float64(-0.09), 'expo': np.float64(0.166)}
+{'name': 'BTC_froth_rollover_short', 'IS_sharpe': np.float64(-0.813), 'IS_cagr': np.float64(-0.006), 'IS_maxdd': np.float64(-0.017), 'VAL_sharpe': np.float64(0.482), 'VAL_cagr': np.float64(0.02), 'VAL_maxdd': np.float64(-0.018), 'expo': np.float64(0.002)}
+{'name': 'ETH_buyhold', 'IS_sharpe': np.float64(1.038), 'IS_cagr': np.float64(0.686), 'IS_maxdd': np.float64(-0.8), 'VAL_sharpe': np.float64(1.435), 'VAL_cagr': np.float64(0.758), 'VAL_maxdd': np.float64(-0.291), 'expo': np.float64(1.0)}
+{'name': 'ETH_trend20_long', 'IS_sharpe': np.float64(1.233), 'IS_cagr': np.float64(0.856), 'IS_maxdd': np.float64(-0.51), 'VAL_sharpe': np.float64(1.088), 'VAL_cagr': np.float64(0.419), 'VAL_maxdd': np.float64(-0.235), 'expo': np.float64(0.577)}
+{'name': 'ETH_trend20_ls', 'IS_sharpe': np.float64(0.75), 'IS_cagr': np.float64(0.304), 'IS_maxdd': np.float64(-0.609), 'VAL_sharpe': np.float64(0.367), 'VAL_cagr': np.float64(0.066), 'VAL_maxdd': np.float64(-0.39), 'expo': np.float64(0.979)}
+{'name': 'ETH_trend20_long_notfroth0.8', 'IS_sharpe': np.float64(0.884), 'IS_cagr': np.float64(0.402), 'IS_maxdd': np.float64(-0.51), 'VAL_sharpe': np.float64(0.664), 'VAL_cagr': np.float64(0.117), 'VAL_maxdd': np.float64(-0.092), 'expo': np.float64(0.278)}
+{'name': 'ETH_trend20_long_notfroth0.9', 'IS_sharpe': np.float64(0.936), 'IS_cagr': np.float64(0.46), 'IS_maxdd': np.float64(-0.51), 'VAL_sharpe': np.float64(1.198), 'VAL_cagr': np.float64(0.322), 'VAL_maxdd': np.float64(-0.146), 'expo': np.float64(0.37)}
+{'name': 'ETH_trend50_long', 'IS_sharpe': np.float64(1.185), 'IS_cagr': np.float64(0.846), 'IS_maxdd': np.float64(-0.626), 'VAL_sharpe': np.float64(0.676), 'VAL_cagr': np.float64(0.214), 'VAL_maxdd': np.float64(-0.256), 'expo': np.float64(0.627)}
+{'name': 'ETH_trend50_ls', 'IS_sharpe': np.float64(0.829), 'IS_cagr': np.float64(0.396), 'IS_maxdd': np.float64(-0.763), 'VAL_sharpe': np.float64(-0.261), 'VAL_cagr': np.float64(-0.206), 'VAL_maxdd': np.float64(-0.437), 'expo': np.float64(0.99)}
+{'name': 'ETH_trend50_long_notfroth0.8', 'IS_sharpe': np.float64(1.01), 'IS_cagr': np.float64(0.553), 'IS_maxdd': np.float64(-0.582), 'VAL_sharpe': np.float64(0.01), 'VAL_cagr': np.float64(-0.023), 'VAL_maxdd': np.float64(-0.184), 'expo': np.float64(0.329)}
+{'name': 'ETH_trend50_long_notfroth0.9', 'IS_sharpe': np.float64(1.057), 'IS_cagr': np.float64(0.619), 'IS_maxdd': np.float64(-0.626), 'VAL_sharpe': np.float64(0.57), 'VAL_cagr': np.float64(0.131), 'VAL_maxdd': np.float64(-0.216), 'expo': np.float64(0.421)}
+{'name': 'ETH_capitulation_long_p0.1', 'IS_sharpe': np.float64(0.52), 'IS_cagr': np.float64(0.14), 'IS_maxdd': np.float64(-0.47), 'VAL_sharpe': np.float64(-0.368), 'VAL_cagr': np.float64(-0.022), 'VAL_maxdd': np.float64(-0.052), 'expo': np.float64(0.085)}
+{'name': 'ETH_capitulation_long_p0.2', 'IS_sharpe': np.float64(0.124), 'IS_cagr': np.float64(-0.062), 'IS_maxdd': np.float64(-0.738), 'VAL_sharpe': np.float64(1.084), 'VAL_cagr': np.float64(0.155), 'VAL_maxdd': np.float64(-0.086), 'expo': np.float64(0.166)}
+{'name': 'ETH_froth_rollover_short', 'IS_sharpe': np.float64(0.0), 'IS_cagr': np.float64(0.0), 'IS_maxdd': np.float64(0.0), 'VAL_sharpe': np.float64(0.0), 'VAL_cagr': np.float64(0.0), 'VAL_maxdd': np.float64(0.0), 'expo': np.float64(0.0)}
+/home/user/freqtrade/user_data/edge_research/screen_round5.py:42: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
+  return U10.astype(float).div(U10.sum(axis=1).replace(0, np.nan), axis=0).fillna(0)
+{'name': 'EW10_buyhold', 'IS_sharpe': np.float64(0.333), 'IS_cagr': np.float64(-0.163), 'IS_maxdd': np.float64(-0.883), 'VAL_sharpe': np.float64(1.421), 'VAL_cagr': np.float64(0.994), 'VAL_maxdd': np.float64(-0.452), 'expo': np.float64(0.986)}
+{'name': 'EW10_trend20_long', 'IS_sharpe': np.float64(0.617), 'IS_cagr': np.float64(0.203), 'IS_maxdd': np.float64(-0.634), 'VAL_sharpe': np.float64(1.055), 'VAL_cagr': np.float64(0.472), 'VAL_maxdd': np.float64(-0.439), 'expo': np.float64(0.525)}
+{'name': 'EW10_trend20_ls', 'IS_sharpe': np.float64(0.429), 'IS_cagr': np.float64(-0.056), 'IS_maxdd': np.float64(-0.702), 'VAL_sharpe': np.float64(0.252), 'VAL_cagr': np.float64(-0.029), 'VAL_maxdd': np.float64(-0.602), 'expo': np.float64(0.964)}
+{'name': 'EW10_trend20_long_notfroth0.8', 'IS_sharpe': np.float64(0.392), 'IS_cagr': np.float64(0.068), 'IS_maxdd': np.float64(-0.634), 'VAL_sharpe': np.float64(1.106), 'VAL_cagr': np.float64(0.31), 'VAL_maxdd': np.float64(-0.19), 'expo': np.float64(0.264)}
+{'name': 'EW10_trend20_long_notfroth0.9', 'IS_sharpe': np.float64(0.227), 'IS_cagr': np.float64(-0.032), 'IS_maxdd': np.float64(-0.634), 'VAL_sharpe': np.float64(0.86), 'VAL_cagr': np.float64(0.259), 'VAL_maxdd': np.float64(-0.191), 'expo': np.float64(0.338)}
+{'name': 'EW10_trend50_long', 'IS_sharpe': np.float64(0.718), 'IS_cagr': np.float64(0.283), 'IS_maxdd': np.float64(-0.653), 'VAL_sharpe': np.float64(0.498), 'VAL_cagr': np.float64(0.132), 'VAL_maxdd': np.float64(-0.419), 'expo': np.float64(0.481)}
+{'name': 'EW10_trend50_ls', 'IS_sharpe': np.float64(0.589), 'IS_cagr': np.float64(0.101), 'IS_maxdd': np.float64(-0.731), 'VAL_sharpe': np.float64(-0.661), 'VAL_cagr': np.float64(-0.446), 'VAL_maxdd': np.float64(-0.669), 'expo': np.float64(0.976)}
+{'name': 'EW10_trend50_long_notfroth0.8', 'IS_sharpe': np.float64(0.686), 'IS_cagr': np.float64(0.248), 'IS_maxdd': np.float64(-0.653), 'VAL_sharpe': np.float64(0.595), 'VAL_cagr': np.float64(0.123), 'VAL_maxdd': np.float64(-0.185), 'expo': np.float64(0.225)}
+{'name': 'EW10_trend50_long_notfroth0.9', 'IS_sharpe': np.float64(0.517), 'IS_cagr': np.float64(0.133), 'IS_maxdd': np.float64(-0.653), 'VAL_sharpe': np.float64(0.147), 'VAL_cagr': np.float64(-0.002), 'VAL_maxdd': np.float64(-0.311), 'expo': np.float64(0.305)}
+{'name': 'EW10_capitulation_long_p0.1', 'IS_sharpe': np.float64(0.366), 'IS_cagr': np.float64(0.064), 'IS_maxdd': np.float64(-0.419), 'VAL_sharpe': np.float64(0.607), 'VAL_cagr': np.float64(0.044), 'VAL_maxdd': np.float64(-0.062), 'expo': np.float64(0.085)}
+{'name': 'EW10_capitulation_long_p0.2', 'IS_sharpe': np.float64(-0.081), 'IS_cagr': np.float64(-0.188), 'IS_maxdd': np.float64(-0.808), 'VAL_sharpe': np.float64(1.728), 'VAL_cagr': np.float64(0.341), 'VAL_maxdd': np.float64(-0.071), 'expo': np.float64(0.166)}
+{'name': 'EW10_froth_rollover_short', 'IS_sharpe': np.float64(0.0), 'IS_cagr': np.float64(0.0), 'IS_maxdd': np.float64(0.0), 'VAL_sharpe': np.float64(-1.207), 'VAL_cagr': np.float64(-0.009), 'VAL_maxdd': np.float64(-0.009), 'expo': np.float64(0.001)}
+                               IS_sharpe  IS_cagr  IS_maxdd  VAL_sharpe  VAL_cagr  VAL_maxdd   expo
+name                                                                                               
+BTC_buyhold                        0.524    0.110    -0.789       2.168     1.364     -0.207  1.000
+BTC_trend20_long                   0.871    0.362    -0.561       1.754     0.737     -0.190  0.574
+BTC_trend20_ls                     0.615    0.210    -0.574       0.631     0.198     -0.415  0.975
+BTC_trend20_long_notfroth0.8       0.578    0.156    -0.545       1.588     0.375     -0.073  0.287
+BTC_trend20_long_notfroth0.9       0.477    0.116    -0.545       1.618     0.465     -0.120  0.369
+BTC_trend50_long                   0.974    0.435    -0.519       1.219     0.468     -0.263  0.608
+BTC_trend50_ls                     0.758    0.349    -0.540      -0.095    -0.128     -0.498  0.989
+BTC_trend50_long_notfroth0.8       0.892    0.306    -0.499       1.033     0.260     -0.177  0.322
+BTC_trend50_long_notfroth0.9       0.764    0.254    -0.499       1.016     0.289     -0.214  0.414
+BTC_capitulation_long_p0.1         0.413    0.083    -0.351       0.119     0.005     -0.032  0.085
+BTC_capitulation_long_p0.2         0.067   -0.046    -0.532       1.649     0.288     -0.090  0.166
+BTC_froth_rollover_short          -0.813   -0.006    -0.017       0.482     0.020     -0.018  0.002
+ETH_buyhold                        1.038    0.686    -0.800       1.435     0.758     -0.291  1.000
+ETH_trend20_long                   1.233    0.856    -0.510       1.088     0.419     -0.235  0.577
+ETH_trend20_ls                     0.750    0.304    -0.609       0.367     0.066     -0.390  0.979
+ETH_trend20_long_notfroth0.8       0.884    0.402    -0.510       0.664     0.117     -0.092  0.278
+ETH_trend20_long_notfroth0.9       0.936    0.460    -0.510       1.198     0.322     -0.146  0.370
+ETH_trend50_long                   1.185    0.846    -0.626       0.676     0.214     -0.256  0.627
+ETH_trend50_ls                     0.829    0.396    -0.763      -0.261    -0.206     -0.437  0.990
+ETH_trend50_long_notfroth0.8       1.010    0.553    -0.582       0.010    -0.023     -0.184  0.329
+ETH_trend50_long_notfroth0.9       1.057    0.619    -0.626       0.570     0.131     -0.216  0.421
+ETH_capitulation_long_p0.1         0.520    0.140    -0.470      -0.368    -0.022     -0.052  0.085
+ETH_capitulation_long_p0.2         0.124   -0.062    -0.738       1.084     0.155     -0.086  0.166
+ETH_froth_rollover_short           0.000    0.000     0.000       0.000     0.000      0.000  0.000
+EW10_buyhold                       0.333   -0.163    -0.883       1.421     0.994     -0.452  0.986
+EW10_trend20_long                  0.617    0.203    -0.634       1.055     0.472     -0.439  0.525
+EW10_trend20_ls                    0.429   -0.056    -0.702       0.252    -0.029     -0.602  0.964
+EW10_trend20_long_notfroth0.8      0.392    0.068    -0.634       1.106     0.310     -0.190  0.264
+EW10_trend20_long_notfroth0.9      0.227   -0.032    -0.634       0.860     0.259     -0.191  0.338
+EW10_trend50_long                  0.718    0.283    -0.653       0.498     0.132     -0.419  0.481
+EW10_trend50_ls                    0.589    0.101    -0.731      -0.661    -0.446     -0.669  0.976
+EW10_trend50_long_notfroth0.8      0.686    0.248    -0.653       0.595     0.123     -0.185  0.225
+EW10_trend50_long_notfroth0.9      0.517    0.133    -0.653       0.147    -0.002     -0.311  0.305
+EW10_capitulation_long_p0.1        0.366    0.064    -0.419       0.607     0.044     -0.062  0.085
+EW10_capitulation_long_p0.2       -0.081   -0.188    -0.808       1.728     0.341     -0.071  0.166
+EW10_froth_rollover_short          0.000    0.000     0.000      -1.207    -0.009     -0.009  0.001
