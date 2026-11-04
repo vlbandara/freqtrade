@@ -21,13 +21,20 @@ sys.path.insert(0, str(HERE))
 
 from sessionkit.features import (  # noqa: E402
     anchored_vwap,
+    atr,
+    cme_weekend_anchor,
     detect_sweep,
+    equal_levels,
+    hourly_seasonality,
     in_window,
     opening_range,
     prior_day_levels,
+    prior_week_levels,
     rel_volume_tod,
+    return_z,
     session_flags,
     session_range,
+    swing_points,
 )
 from sessionkit.signals import (  # noqa: E402
     ALL_MODULES,
@@ -40,11 +47,15 @@ from synthetic import make_funding, make_minute_paths, resample  # noqa: E402
 
 @pytest.fixture(scope="module")
 def market():
-    m = make_minute_paths(start="2025-02-24", days=40, seed=3)  # spans the US DST switch (Mar 9)
+    # 60 days from Feb 3: spans the US DST switch (Mar 9) and leaves 4h EMA / percentile warm-up
+    m = make_minute_paths(start="2025-02-03", days=60, seed=3)
+    eth5 = resample(m["ETH/USDT:USDT"], "5min")
     return {
-        "eth5": resample(m["ETH/USDT:USDT"], "5min"),
+        "eth5": eth5,
         "eth1h": resample(m["ETH/USDT:USDT"], "1h"),
+        "eth4h": resample(m["ETH/USDT:USDT"], "4h"),
         "btc5": resample(m["BTC/USDT:USDT"], "5min"),
+        "funding": make_funding(eth5["date"]),
     }
 
 
@@ -54,9 +65,20 @@ def _all_on() -> Params:
     return p
 
 
-def _pipeline(df5, df1h, btc5):
+def _pipeline(mk, k=None):
+    """Run features + signals. With ``k``, every input is cut to what was KNOWN when the
+    k-th 5m candle closed: informative candles must have closed, funding must be settled."""
+    df5, df1h, df4h, btc5, fund = mk["eth5"], mk["eth1h"], mk["eth4h"], mk["btc5"], mk["funding"]
+    if k is not None:
+        last_open = df5["date"].iloc[k - 1]
+        t_close = last_open + pd.Timedelta(minutes=5)
+        df5 = df5.iloc[:k].copy()
+        btc5 = btc5[btc5["date"] <= last_open]
+        df1h = df1h[df1h["date"] + pd.Timedelta(hours=1) <= t_close]
+        df4h = df4h[df4h["date"] + pd.Timedelta(hours=4) <= t_close]
+        fund = fund[fund["date"] <= last_open]
     p = _all_on()
-    f = build_features(df5, 5, df1h, make_funding(btc5["date"]), btc5, p)
+    f = build_features(df5, 5, df1h, fund, btc5, p, df4h=df4h)
     return compute_signals(f, p)
 
 
@@ -71,12 +93,15 @@ def _pipeline(df5, df1h, btc5):
         "2025-03-20 13:45",  # inside the NY opening range (EDT)
         "2025-03-22 14:00",  # weekend
         "2025-03-31 23:55",  # last candle before the UTC day roll
+        "2025-03-23 21:55",  # CME reopen candle (17:00 CDT)
+        "2025-03-24 08:55",  # top of the hour: seasonality lookup + 4h boundary
+        "2025-03-26 11:50",  # mid-week: prior-week levels, equal highs/lows
     ],
 )
 def test_no_lookahead(market, cut):
-    full = _pipeline(market["eth5"], market["eth1h"], market["btc5"])
+    full = _pipeline(market)
     k = int((market["eth5"]["date"] <= pd.Timestamp(cut, tz="UTC")).sum())
-    part = _pipeline(market["eth5"].iloc[:k].copy(), market["eth1h"], market["btc5"])
+    part = _pipeline(market, k)
     assert len(part) == k
     cols = [c for c in part.columns if c != "date"]
     a = full.iloc[:k][cols].reset_index(drop=True)
@@ -90,11 +115,48 @@ def test_no_lookahead(market, cut):
         assert bool(np.all(ok)), f"column {c} differs between full and truncated data at {cut}"
 
 
+def _assert_same(a: pd.DataFrame, b: pd.DataFrame, label: str):
+    for c in b.columns:
+        x, y = a[c].reset_index(drop=True), b[c].reset_index(drop=True)
+        if pd.api.types.is_numeric_dtype(x) and pd.api.types.is_numeric_dtype(y):
+            ok = np.isclose(x.astype(float), y.astype(float), equal_nan=True, rtol=1e-9)
+        else:
+            ok = (x == y) | (x.isna() & y.isna())
+        assert bool(np.all(ok)), f"{label}: column {c} differs"
+
+
+def test_feature_functions_are_causal_at_many_cuts(market):
+    """Dense check (40 random cuts) straight on the feature functions: sparse events such
+    as swing pivots or equal-high pools would rarely sit on one of the pipeline cuts."""
+    df5, df1h = market["eth5"], market["eth1h"]
+    a5 = atr(df5)
+    funcs = {
+        "swing_points": lambda d, h: swing_points(d, 3),
+        "equal_levels": lambda d, h: equal_levels(d, atr(d)),
+        "return_z": lambda d, h: return_z(d["close"]).to_frame(),
+        "rel_volume_tod": lambda d, h: rel_volume_tod(d).to_frame(),
+        "cme_weekend_anchor": lambda d, h: cme_weekend_anchor(d),
+        "prior_week_levels": lambda d, h: prior_week_levels(d, h),
+        "hourly_seasonality": lambda d, h: hourly_seasonality(d, h, min_obs=3),
+    }
+    full = {name: f(df5, df1h) for name, f in funcs.items()}
+    rng = np.random.default_rng(0)
+    for k in sorted(rng.integers(3000, len(df5), 40)):
+        t_close = df5["date"].iloc[k - 1] + pd.Timedelta(minutes=5)
+        h_k = df1h[df1h["date"] + pd.Timedelta(hours=1) <= t_close]
+        for name, f in funcs.items():
+            _assert_same(full[name].iloc[:k], f(df5.iloc[:k].copy(), h_k), f"{name} @k={k}")
+    assert a5.notna().any()
+
+
 def test_all_modules_fire_on_synthetic(market):
-    out = _pipeline(market["eth5"], market["eth1h"], market["btc5"])
+    out = _pipeline(market)
     tags = set(out["enter_tag"].dropna())
-    # sweeps are rare by design; the remaining modules must fire on 40 days of data
-    assert {"ny_orb", "late_mom", "wknd_vwap", "fund_window"} <= tags
+    # sweeps / squeezes are rare by design; these must fire on 60 days of data
+    assert {"ny_orb", "late_mom", "wknd_vwap", "fund_window", "eq_sweep", "trend_4h"} <= tags
+    trend = out[out["enter_tag"] == "trend_4h"]
+    assert trend["sig_trail"].gt(0).all()
+    assert out.loc[out["enter_tag"] != "trend_4h", "sig_trail"].isna().all()
     sig = out[out["enter_tag"].notna()]
     long_ = sig["enter_long"] == 1
     assert (sig.loc[long_, "sig_stop"] < sig.loc[long_, "close"]).all()
@@ -234,3 +296,47 @@ def test_detect_sweep_rejects_breakouts():
     one = pd.Series(1.0, index=df.index)
     sw = detect_sweep(df, one * 100, one * 90, one, day)
     assert not sw["sweep_short"].any()
+
+
+# ---------------------------------------------------------------------------
+# Second-wave features
+# ---------------------------------------------------------------------------
+def test_swing_points_confirmed_k_bars_later():
+    dates = pd.date_range("2025-03-10", periods=9, freq="5min", tz="UTC")
+    h = [1, 2, 3, 9, 3, 2, 1, 1, 1]
+    df = _frame(dates, h, h, [x - 0.5 for x in h], h)
+    sw = swing_points(df, k=3)
+    assert sw["swing_high"].notna().tolist() == [False] * 6 + [True, False, False]
+    assert sw["swing_high"].iloc[6] == 9  # pivot at bar 3, known at bar 6
+
+
+def test_equal_highs_pool_detected_and_untouched_rule():
+    # two swing highs at 10.00 and 10.02 (within 0.1 ATR of 1.0), nothing above in between
+    h = [8, 9, 10.0, 9, 8, 7, 8, 9, 10.02, 9, 8, 7, 7, 7]
+    dates = pd.date_range("2025-03-10", periods=len(h), freq="5min", tz="UTC")
+    df = _frame(dates, h, h, [x - 0.5 for x in h], h)
+    eq = equal_levels(df, pd.Series(1.0, index=df.index), k=2, lookback=50, tol_atr=0.1)
+    assert eq["eqh"].iloc[10] == pytest.approx(10.02)  # second pivot (bar 8) confirmed at bar 10
+    assert eq["eqh"].iloc[:10].isna().all()
+    # a higher high between the pivots means the pool was already taken -> no level
+    h2 = h.copy()
+    h2[5] = 11.0
+    df2 = _frame(dates, h2, h2, [x - 0.5 for x in h2], h2)
+    eq2 = equal_levels(df2, pd.Series(1.0, index=df.index), k=2, lookback=50, tol_atr=0.1)
+    assert eq2["eqh"].isna().all()
+
+
+def test_cme_anchor_follows_chicago_dst():
+    # Friday close 16:00 CT = 22:00 UTC in CST (Mar 7), Sunday reopen 17:00 CT = 22:00 UTC
+    # in CDT (Mar 9, the day the US switched)
+    dates = pd.date_range("2025-03-07 21:00", "2025-03-09 23:00", freq="5min", tz="UTC")
+    n = len(dates)
+    close = np.arange(n, dtype=float)
+    df = _frame(dates, close, close + 1, close - 1, close)
+    cme = cme_weekend_anchor(df)
+    fri_idx = int(np.flatnonzero(dates == pd.Timestamp("2025-03-07 21:55", tz="UTC"))[0])
+    assert cme["cme_fri_close"].iloc[fri_idx] == close[fri_idx]
+    assert cme["cme_fri_close"].iloc[:fri_idx].isna().all()
+    reopen = dates[cme["cme_reopen"].to_numpy()]
+    assert list(reopen) == [pd.Timestamp("2025-03-09 21:55", tz="UTC")]
+    assert cme["cme_fri_close"].iloc[-1] == close[fri_idx]

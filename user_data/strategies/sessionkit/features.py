@@ -22,6 +22,7 @@ import pandas as pd
 UTC = "UTC"
 NEW_YORK = "America/New_York"
 LONDON = "Europe/London"
+CHICAGO = "America/Chicago"
 
 
 # ---------------------------------------------------------------------------
@@ -360,3 +361,197 @@ def event_blackout(
             dates <= t + pd.Timedelta(minutes=after_min)
         )
     return block
+
+
+# ---------------------------------------------------------------------------
+# Higher-timeframe levels, swing structure, shocks, seasonality
+# ---------------------------------------------------------------------------
+def week_key(dates: pd.Series) -> pd.Series:
+    """Monday 00:00 UTC of the candle's ISO week (naive Timestamp, a groupby key)."""
+    d = dates.dt.tz_convert(UTC).dt.tz_localize(None)
+    return (d - pd.to_timedelta(d.dt.dayofweek, unit="D")).dt.floor("D")
+
+
+def prior_week_levels(df: pd.DataFrame, df1h: pd.DataFrame, coverage: float = 0.95) -> pd.DataFrame:
+    """
+    Previous UTC week's (Mon-Sun) high / low / mid for every row of ``df``.
+
+    Computed from the 1h frame (which has a much longer history than the 5m startup
+    window) and mapped by week key. Only completed, contiguous, >= ``coverage`` covered
+    weeks are used.
+    """
+    wk1h = week_key(df1h["date"])
+    agg = df1h.groupby(wk1h).agg(high=("high", "max"), low=("low", "min"), n=("close", "size"))
+    full = agg["n"] >= coverage * 7 * 24
+    agg.loc[~full, ["high", "low"]] = np.nan
+    prev = agg[["high", "low"]].shift(1)
+    contiguous = agg.index.to_series().diff() == pd.Timedelta(days=7)
+    prev = prev.where(contiguous, np.nan)
+    wk = week_key(df["date"])
+    out = pd.DataFrame(index=df.index)
+    out["pwh"] = wk.map(prev["high"]).astype(float)
+    out["pwl"] = wk.map(prev["low"]).astype(float)
+    out["pw_mid"] = (out["pwh"] + out["pwl"]) / 2
+    out["week_key"] = wk
+    return out
+
+
+def swing_points(df: pd.DataFrame, k: int = 3) -> pd.DataFrame:
+    """
+    Fractal swing highs / lows, reported on the bar where they become CONFIRMED
+    (``k`` bars after the pivot), so they carry no look-ahead.
+
+    Columns: ``swing_high`` / ``swing_low`` (pivot price or NaN) on the confirmation bar.
+    """
+    w = 2 * k + 1
+    h, lo = df["high"], df["low"]
+    piv_h = h.shift(k)
+    piv_l = lo.shift(k)
+    is_h = piv_h.notna() & (piv_h == h.rolling(w, min_periods=w).max())
+    is_l = piv_l.notna() & (piv_l == lo.rolling(w, min_periods=w).min())
+    out = pd.DataFrame(index=df.index)
+    out["swing_high"] = piv_h.where(is_h)
+    out["swing_low"] = piv_l.where(is_l)
+    return out
+
+
+def equal_levels(
+    df: pd.DataFrame,
+    atr_: pd.Series,
+    k: int = 3,
+    lookback: int = 288,
+    tol_atr: float = 0.1,
+    valid_bars: int = 288,
+) -> pd.DataFrame:
+    """
+    "Equal highs / lows" liquidity pools: two confirmed swing highs (lows) within
+    ``tol_atr`` x ATR of each other, at most ``lookback`` bars apart, with price never
+    trading through the pair in between. Stops of everyone who sold the double top
+    sit just above it.
+
+    Returns the active pool level (``eqh`` / ``eql``), valid for ``valid_bars`` after
+    confirmation, and an id per pool (``eqh_id`` / ``eql_id``) to key sweep detection.
+    """
+    sw = swing_points(df, k)
+    n = len(df)
+    h = df["high"].to_numpy(float)
+    lo = df["low"].to_numpy(float)
+    a = atr_.to_numpy(float)
+
+    def _scan(vals: np.ndarray, is_high: bool) -> tuple[np.ndarray, np.ndarray]:
+        level = np.full(n, np.nan)
+        lid = np.full(n, np.nan)
+        events = np.flatnonzero(~np.isnan(vals))
+        recent: list[tuple[int, float]] = []
+        counter = 0
+        for i in events:
+            v = vals[i]
+            piv_i = i - k
+            recent = [(j, vj) for j, vj in recent if i - j <= lookback]
+            if np.isfinite(a[i]):
+                for j, vj in reversed(recent):
+                    if abs(v - vj) > tol_atr * a[i]:
+                        continue
+                    lvl = max(v, vj) if is_high else min(v, vj)
+                    between = slice(j - k + 1, piv_i)
+                    if is_high:
+                        untouched = between.start >= between.stop or h[between].max() <= lvl
+                    else:
+                        untouched = between.start >= between.stop or lo[between].min() >= lvl
+                    if untouched:
+                        counter += 1
+                        level[i] = lvl
+                        lid[i] = counter
+                        break
+            recent.append((i, v))
+        lv = pd.Series(level).ffill(limit=valid_bars).to_numpy()
+        ids = pd.Series(lid).ffill(limit=valid_bars).to_numpy()
+        return lv, ids
+
+    out = pd.DataFrame(index=df.index)
+    out["eqh"], out["eqh_id"] = _scan(sw["swing_high"].to_numpy(float), True)
+    out["eql"], out["eql_id"] = _scan(sw["swing_low"].to_numpy(float), False)
+    return out
+
+
+def return_z(close: pd.Series, window: int = 288) -> pd.Series:
+    """Log return of the candle in units of the trailing (past-only) return std."""
+    r = np.log(close).diff()
+    sd = r.rolling(window, min_periods=window // 2).std().shift(1)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        z = r / sd
+    return z.replace([np.inf, -np.inf], np.nan)
+
+
+def hourly_seasonality(
+    df: pd.DataFrame, df1h: pd.DataFrame, window: str = "120D", min_obs: int = 20
+) -> pd.DataFrame:
+    """
+    Walk-forward hour-of-day seasonality, split weekday / weekend (48 buckets).
+
+    For each candle that closes at the top of an hour, returns the trailing ``window``
+    mean and t-stat of the 1h log return (open -> close) of the bucket of the hour that is
+    about to START. Only 1h candles that have already CLOSED are used (as-of merge on the
+    1h close time), so the value is known when the signal candle closes.
+    """
+    d = pd.DataFrame({"date": df1h["date"], "r": np.log(df1h["close"] / df1h["open"])})
+    d["bucket"] = d["date"].dt.hour + 24 * (d["date"].dt.dayofweek >= 5)
+    d = d.set_index("date")
+    roll = d.groupby("bucket")["r"].rolling(window)
+    stats = pd.DataFrame({"m": roll.mean(), "sd": roll.std(), "n": roll.count()}).reset_index()
+    stats.columns = ["bucket", "date", "m", "sd", "n"]
+    stats["t"] = stats["m"] / (stats["sd"] / np.sqrt(stats["n"]))
+    stats.loc[stats["n"] < min_obs, ["m", "t"]] = np.nan
+    stats["avail"] = stats["date"] + pd.Timedelta(hours=1)  # known once the 1h candle closed
+    stats = stats.sort_values("avail")[["avail", "bucket", "m", "t"]]
+
+    tf = pd.Timedelta(minutes=infer_tf_minutes(df["date"]) if len(df) > 1 else 5)
+    nxt = df["date"] + tf  # close of the current candle = start of the next hour
+    left = pd.DataFrame(
+        {
+            "_i": np.arange(len(df)),
+            "avail": nxt,
+            "bucket": nxt.dt.hour + 24 * (nxt.dt.dayofweek >= 5),
+        }
+    ).sort_values("avail")
+    merged = pd.merge_asof(left, stats, on="avail", by="bucket", direction="backward")
+    merged = merged.sort_values("_i")
+    at_hour = (nxt.dt.minute == 0).to_numpy()
+    out = pd.DataFrame(index=df.index)
+    out["season_mean"] = np.where(at_hour, merged["m"].to_numpy(), np.nan)
+    out["season_t"] = np.where(at_hour, merged["t"].to_numpy(), np.nan)
+    return out
+
+
+def htf_trend(
+    df4h: pd.DataFrame, dc_len: int = 20, ema_len: int = 200, atr_len: int = 14
+) -> pd.DataFrame:
+    """4h trend features: Donchian channel, EMA, ATR, efficiency ratio percentile."""
+    out = df4h[["date"]].copy()
+    out["dc_high"] = df4h["high"].rolling(dc_len, min_periods=dc_len).max()
+    out["dc_low"] = df4h["low"].rolling(dc_len, min_periods=dc_len).min()
+    out["ema"] = df4h["close"].ewm(span=ema_len, adjust=False, min_periods=ema_len).mean()
+    out["atr"] = atr(df4h, atr_len)
+    er = efficiency_ratio(df4h["close"], dc_len)
+    out["er_pct"] = rolling_pct_rank(er, 540, min_periods=180)
+    return out
+
+
+def cme_weekend_anchor(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    CME bitcoin futures stop trading Friday 16:00 and reopen Sunday 17:00 (Chicago time).
+
+    ``cme_fri_close``: close of the perp candle ending at the Friday 16:00 CT close,
+    carried forward over the weekend. ``cme_reopen``: True on the candle that ends at the
+    Sunday 17:00 CT reopen (signal candle -> entry exactly at the reopen).
+    """
+    local = df["date"].dt.tz_convert(CHICAGO)
+    tf = int((df["date"].diff().median()) / pd.Timedelta(minutes=1)) if len(df) > 1 else 5
+    end = local + pd.Timedelta(minutes=tf)
+    fri = (end.dt.dayofweek == 4) & (end.dt.hour == 16) & (end.dt.minute == 0)
+    sun = (end.dt.dayofweek == 6) & (end.dt.hour == 17) & (end.dt.minute == 0)
+    fri_close = df["close"].where(fri).ffill(limit=int(60 * 60 / tf))
+    out = pd.DataFrame(index=df.index)
+    out["cme_fri_close"] = fri_close
+    out["cme_reopen"] = sun
+    return out

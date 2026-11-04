@@ -33,6 +33,18 @@ Two behaviours follow from this, and they pull in opposite directions:
 | `wknd_vwap` *(research)* | MR | On weekends, the first bar more than 2σ away from the weekend-anchored VWAP, fading the move. | 1× 1h ATR | VWAP | 6h |
 | `fund_window` *(research)* | Directional | One hour before each funding settlement, fade the side whose funding is in the top or bottom 10% of the last 30 days. | 1× 1h ATR | – | settlement + 15 min |
 
+### Second wave (research-gated, off until they pass)
+
+| Tag | Family | Entry | Stop | Target | Time stop |
+|---|---|---|---|---|---|
+| `pw_sweep` | Liquidity | First sweep and reclaim of the **prior-week** high/low (the biggest obvious stop pools of the week), relative volume ≥ 1.5, mean-reversion regime, R:R ≥ 1. | sweep extreme ± 0.25 ATR | prior-week midpoint, capped at 2R | 24h |
+| `eq_sweep` | Liquidity | Sweep and reclaim of an **equal-highs / equal-lows** pool: two confirmed swing pivots within 0.1 ATR of each other, at most a day apart, and never traded through in between. Relative volume ≥ 1.5. | sweep extreme ± 0.25 ATR | 1.5R | 4h |
+| `liq_cascade` | Liquidity | **Liquidation-cascade fade**: a 5m candle whose return is ≥ 4σ of the trailing distribution, with relative volume ≥ 4, a rejection wick ≥ 40% of its range, outside the top-decile trend regime. | 1× 1h ATR beyond the extreme | day VWAP, capped at 1.5R | 2h |
+| `asia_squeeze` | Vol/session | **Compression → expansion**: Asia range ≤ 0.7× its 20-day median and 1h volatility in its bottom 30%. Trade the first *close* outside the range in London / NY-AM with volume. This is the momentum mirror of `asia_sweep`. | Asia midpoint | 2R | 16:00 ET |
+| `tod_season` | Vol/session | **Walk-forward hour-of-day seasonality**, with weekday and weekend buckets. Trades the next hour when its trailing 120-day t-stat is ≥ 2.5, using only hours that have already closed. | 1.5× 1h ATR | – | end of the hour |
+| `cme_gap` | Vol/session | At the **CME reopen** (Sunday 17:00 Chicago), if the perp has moved ≥ 1 daily ATR away from the Friday 16:00 CT CME-close price, fade back toward it. | 1× 1h ATR | Friday CME close | Tuesday 00:00 UTC |
+| `trend_4h` | Trend | **4h Donchian(20) breakout** in the direction of the 4h EMA200, in a trending 4h regime. Entered only on a 5m close during London / NY-AM with relative volume ≥ 1.2, to filter out thin-hours fakeouts. | **chandelier trail 3× 4h ATR** (built from completed candles only) | – | 10 days |
+
 These filters apply to every module:
 - Skip when 1h realized volatility is above its 95th percentile (news shocks).
 - For altcoins, block longs while BTC has moved down more than 2σ in the last hour, and block shorts when it has moved up more than 2σ.
@@ -42,21 +54,28 @@ These filters apply to every module:
 ### Key feature engineering
 - **Time-of-day relative volume.** Volume is divided by the median volume of the same 5-minute slot over the previous 10 days. A value of 2 means "twice the normal volume *for this time of day*". Without this, every US open looks like a volume spike.
 - **DST-correct sessions.** Session windows are defined in `America/New_York` and `Europe/London` local time using `zoneinfo`, so they shift correctly when daylight saving changes.
-- **Look-ahead safety by construction.** A session's levels only appear after that session has closed, and PDH/PDL require a complete previous day. A unit test re-computes every column on truncated data and requires the values to be identical. Planting look-ahead bugs makes that test fail. freqtrade's `lookahead-analysis` also reports no bias.
+- **Look-ahead safety by construction.** A session's levels only appear after that session has closed, PDH/PDL require a complete previous day, swing pivots count only once confirmed, and seasonality and prior-week levels use only 1h candles that have already closed. Two tests enforce this:
+  - The pipeline test re-computes every column with *all* inputs (5m, 1h, 4h, funding, BTC) cut to what was known at 8 points in time. Every value must match.
+  - A dense test checks each feature function at 40 random cut points.
+
+  Each of five planted look-ahead bugs was caught. One of them, a centered swing window, was only caught by the dense test. freqtrade's `lookahead-analysis` also reports no bias.
 
 ## 3. Risk
 - **Position size.** Stake = `sls_risk_per_trade` (0.5%) × equity / stop distance / leverage, capped at the per-slot stake. In the smoke backtest, a stopped-out trade loses about 0.5% of equity.
 - **Plan frozen at entry.** The stop, target and deadline are fixed from the signal candle when the trade opens. The stop is enforced with `custom_stoploss` and an on-exchange stop. The target is enforced with `custom_roi`, and the deadline with `custom_exit`.
-- **Breakeven.** The stop moves to breakeven plus fees once the trade has been 1R in profit.
+- **Breakeven / trailing.** Fixed-stop modules move the stop to breakeven plus fees once the trade has been 1R in profit. `trend_4h` instead trails a chandelier stop from the best price of *completed* candles. It deliberately does not use `trade.max_rate`, which in backtesting already includes the high of the candle being evaluated.
+- **Backstop.** A `stoploss` of -0.25 (leveraged, about 8% of price at 3x) only bounds the worst case. Each trade's real stop comes from its plan.
 - **Portfolio limits.** At most 4 open trades and at most 3 in the same direction. Protections (Cooldown, StoplossGuard, MaxDrawdown 8%) are defined in the strategy.
 
 ## 4. Files
 | Path | What it is |
 |---|---|
 | `user_data/strategies/sessionkit/features.py` | Look-ahead-safe features: sessions, ranges, PDH/PDL, anchored VWAP, relative volume, sweeps, regime |
-| `user_data/strategies/sessionkit/signals.py` | `Params`, feature assembly and the six modules. Shared by the strategy and the research script |
-| `user_data/strategies/SessionLiquidityStack.py` | The freqtrade strategy, plus the `SLS_AsiaSweep`, `SLS_PDSweep`, `SLS_NYORB` and `SLS_Research` variants |
-| `user_data/research/event_study.py` | Event study with day-clustered t-stats, placebo test and the gate |
+| `user_data/strategies/sessionkit/signals.py` | `Params`, feature assembly and all 13 modules. Shared by the strategy and the research scripts |
+| `user_data/strategies/SessionLiquidityStack.py` | The freqtrade strategy, plus one `SLS_*` subclass per module and `SLS_Research` (all modules) |
+| `user_data/research/event_study.py` | Event study with day-clustered t-stats, a placebo test, the gate, and a plan replay with trailing / breakeven stops |
+| `user_data/research/run_backtests.py` | Runs the freqtrade backtest grid (every module × IS / OOS, plus a portfolio) in parallel processes |
+| `user_data/research/equity_report.py` | Equity curves (PNG), metrics, a monthly table and gate verdicts (`report_data.json`) from the grid |
 | `user_data/config_sls_futures.json` | Binance USDT-M config with 20 majors, isolated margin, 0.05% fee |
 | `user_data/tests/` | Unit and look-ahead tests, an end-to-end smoke backtest, and tests for the gate |
 
@@ -64,7 +83,7 @@ These filters apply to every module:
 
 **Step 1. Download data.** In futures mode, funding-rate and mark candles are downloaded automatically.
 ```bash
-freqtrade download-data -c user_data/config_sls_futures.json --timeframes 5m 1h --timerange 20201201- --trading-mode futures
+freqtrade download-data -c user_data/config_sls_futures.json --timeframes 5m 1h 4h 1d --timerange 20201201- --trading-mode futures
 ```
 
 **Step 2. Run the event study (in-sample and out-of-sample).** The holdout period starts 2026-01-01; leave it out for now.
@@ -79,13 +98,18 @@ This writes `user_data/research/out/report.md`. A module stays on only if it **p
 
 Research modules are only turned on if they pass, via `"sls_modules"` in the config.
 
-**Step 3. Backtest the stack and each module on its own.**
+**Step 3. Backtest every module on its own, then build the equity curves.** This runs 13 modules × 2 splits, 3 at a time.
 ```bash
-freqtrade backtesting -c user_data/config_sls_futures.json --strategy-list SessionLiquidityStack SLS_AsiaSweep SLS_PDSweep SLS_NYORB --timerange 20210101-20251231 --breakdown month --export signals
+python user_data/research/run_backtests.py --splits is oos --jobs 3
+```
+Then run the modules that passed the gate *and* had a positive out-of-sample backtest together, as one portfolio:
+```bash
+python user_data/research/run_backtests.py --splits is oos --no-singles --portfolio <modules...> --name portfolio
 ```
 ```bash
-freqtrade backtesting-analysis -c user_data/config_sls_futures.json --analysis-groups 0 1 2
+python user_data/research/equity_report.py --events user_data/research/out/events.csv
 ```
+This writes `portfolio_vs_btc.png`, `modules_grid.png`, `metrics.csv` and `report_data.json` to `user_data/research/out/`.
 
 **Step 4. Run the bias checks.**
 ```bash
@@ -110,6 +134,9 @@ freqtrade backtesting -c user_data/config_sls_futures.json -c sweep.json --timer
 - correlation with BTC buy-and-hold < 0.3.
 
 If it clears the bar, run the **2026 holdout once**. If that fails, the idea is rejected. Do not re-tune on the holdout.
+```bash
+python user_data/research/run_backtests.py --splits holdout --confirm-holdout --no-singles --portfolio <modules...> --name portfolio
+```
 
 **Step 7. Paper trade.** Run 4–8 weeks of `dry_run` before going live, and compare live fills and slippage with the backtest.
 

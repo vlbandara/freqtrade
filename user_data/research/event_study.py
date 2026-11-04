@@ -58,6 +58,7 @@ def load_pair(datadir: Path, pair: str, futures: bool) -> dict[str, pd.DataFrame
     out = {
         "5m": load_pair_history(datadir=datadir, timeframe="5m", pair=pair, candle_type=ct),
         "1h": load_pair_history(datadir=datadir, timeframe="1h", pair=pair, candle_type=ct),
+        "4h": load_pair_history(datadir=datadir, timeframe="4h", pair=pair, candle_type=ct),
     }
     out["funding"] = (
         load_pair_history(
@@ -84,13 +85,23 @@ def simulate_plan(
     target: float,
     deadline: float,
     tf_sec: int,
+    trail: float = np.nan,
+    breakeven_r: float = 1.0,
+    fee_pad: float = 0.001,
 ) -> tuple[float, int, str]:
     """Walk the trade forward from the entry at o[i+1]. Returns (gross return, bars held, reason).
 
-    Conservative: if stop and target are both inside one candle, the stop is assumed first.
+    Mirrors the strategy's exit logic: time stop at the candle open, structural stop,
+    target, then either a chandelier trail (``trail`` = distance in price) or a breakeven
+    stop once the trade has been ``breakeven_r`` R in profit. Stops are only moved using
+    COMPLETED candles, and if stop and target are both inside one candle, the stop is
+    assumed first (conservative).
     """
     entry = o[i + 1]
     n = len(o)
+    risk = abs(entry - stop)
+    use_trail = np.isfinite(trail) and trail > 0
+    best = entry
     for j in range(i + 1, n):
         if ts[j] >= deadline:
             return side * (o[j] / entry - 1), j - i - 1, "time"
@@ -99,11 +110,21 @@ def simulate_plan(
                 return min(stop, o[j]) / entry - 1, j - i, "stop"
             if np.isfinite(target) and h[j] >= target:
                 return max(target, o[j]) / entry - 1, j - i, "target"
+            best = max(best, h[j])
+            if use_trail:
+                stop = max(stop, best - trail)
+            elif breakeven_r > 0 and risk > 0 and best >= entry + breakeven_r * risk:
+                stop = max(stop, entry * (1 + fee_pad))
         else:
             if h[j] >= stop:
                 return -(max(stop, o[j]) / entry - 1), j - i, "stop"
             if np.isfinite(target) and lo[j] <= target:
                 return -(min(target, o[j]) / entry - 1), j - i, "target"
+            best = min(best, lo[j])
+            if use_trail:
+                stop = min(stop, best + trail)
+            elif breakeven_r > 0 and risk > 0 and best <= entry - breakeven_r * risk:
+                stop = min(stop, entry * (1 - fee_pad))
     return side * (c[-1] / entry - 1), n - i - 1, "eod"
 
 
@@ -123,7 +144,9 @@ def events_for_pair(
     if df5.empty:
         return pd.DataFrame()
     is_btc = pair.startswith("BTC/")
-    f = build_features(df5, 5, data["1h"], data["funding"], None if is_btc else btc5, p)
+    f = build_features(
+        df5, 5, data["1h"], data["funding"], None if is_btc else btc5, p, df4h=data["4h"]
+    )
     o, h, lo, c = (f[k].to_numpy(float) for k in ("open", "high", "low", "close"))
     ts = (f["date"].astype("int64") // 10**9).to_numpy()
     n = len(f)
@@ -144,6 +167,7 @@ def events_for_pair(
             stops = m[f"stop_{side_name}"].to_numpy(float)
             targets = m[f"target_{side_name}"].to_numpy(float)
             deadlines = m["deadline"].to_numpy(float)
+            trails = m["trail"].to_numpy(float)
             for i in idx:
                 entry = o[i + 1]
                 rec = {
@@ -164,8 +188,9 @@ def events_for_pair(
                         )
                 risk = abs(entry - stops[i]) / entry
                 gross, bars, why = simulate_plan(
-                    o, h, lo, c, ts, i, side, stops[i], targets[i], deadlines[i], 300
-                )
+                    o, h, lo, c, ts, i, side, stops[i], targets[i], deadlines[i], 300,
+                    trail=trails[i],
+                )  # fmt: skip
                 # Placebo for the full plan: same stop / target distance (in %), same time
                 # budget, same side, but at random candles of the same hour / day type.
                 pl = pools[pool_key[i]]
@@ -175,10 +200,12 @@ def events_for_pair(
                     stop_frac = stops[i] / entry
                     tgt_frac = targets[i] / entry
                     budget = deadlines[i] - ts[i]
+                    trail_frac = trails[i] / entry
                     sims = [
                         simulate_plan(
                             o, h, lo, c, ts, j, side, o[j + 1] * stop_frac,
                             o[j + 1] * tgt_frac, ts[j] + budget, 300,
+                            trail=o[j + 1] * trail_frac,
                         )[0]
                         for j in s
                     ]  # fmt: skip

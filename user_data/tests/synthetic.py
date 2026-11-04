@@ -48,12 +48,17 @@ def make_minute_paths(
         shock = common if i == 0 else 0.8 * common + 0.6 * idio  # unit variance, rho=0.8
         sigma = base_sigma * sess * day_regime * (1.0 + 0.3 * i)
         ret = sigma * shock
+        # rare fat-tailed jumps (liquidation-like) with a volume burst
+        jumps = rng.random(len(idx)) < 1 / 3000
+        jump_ret = jumps * rng.choice([-1, 1], len(idx)) * sigma * 25
+        ret = ret + jump_ret - 0.6 * np.concatenate([[0.0], jump_ret[:-1]])  # wick-like snap-back
         close = p0 * np.exp(np.cumsum(ret))
         open_ = np.concatenate([[p0], close[:-1]])
         wick = np.abs(rng.standard_normal(len(idx))) * sigma * close * 0.5
         high = np.maximum(open_, close) + wick
         low = np.minimum(open_, close) - wick
         vol = 100 * sess * day_regime * (1 + 400 * np.abs(ret)) * rng.lognormal(0, 0.3, len(idx))
+        vol = vol * np.where(jumps, 15.0, 1.0)
         out[pair] = pd.DataFrame(
             {"open": open_, "high": high, "low": low, "close": close, "volume": vol}, index=idx
         )
@@ -94,7 +99,7 @@ def write_datadir(datadir: Path, days: int = 60, start: str = "2025-01-01") -> l
     dh = get_datahandler(datadir, "feather")
     minute = make_minute_paths(start=start, days=days)
     for pair, d1m in minute.items():
-        for tf, rule in (("5m", "5min"), ("1h", "1h"), ("1d", "1D")):
+        for tf, rule in (("5m", "5min"), ("1h", "1h"), ("4h", "4h"), ("1d", "1D")):
             dh.ohlcv_store(pair, tf, resample(d1m, rule), CandleType.FUTURES)
         mark = resample(d1m, "8h")
         dh.ohlcv_store(pair, "8h", mark, CandleType.MARK)

@@ -56,13 +56,16 @@ class SessionLiquidityStack(IStrategy):
 
     timeframe = "5m"
     informative_timeframe = "1h"
+    trend_timeframe = "4h"
     funding_timeframe = "8h"
     can_short = True
 
     # Exits are driven by the per-trade plan (custom stop / custom ROI / time stop).
     minimal_roi = {"0": 100.0}
     use_custom_roi = True
-    stoploss = -0.08  # hard backstop only (leveraged ratio)
+    # Hard backstop only (leveraged ratio: -0.25 at 3x = 8.3% price move). Every trade has
+    # a tighter structural / trailing stop from its plan; this just bounds the worst case.
+    stoploss = -0.25
     use_custom_stoploss = True
     trailing_stop = False
     use_exit_signal = True  # required for custom_exit (time stop); exit columns stay 0
@@ -154,6 +157,7 @@ class SessionLiquidityStack(IStrategy):
     def informative_pairs(self):
         pairs = self.dp.current_whitelist()
         inf = [(p, self.informative_timeframe) for p in pairs]
+        inf += [(p, self.trend_timeframe) for p in pairs]
         if self._is_futures():
             inf += [(p, self.funding_timeframe, CandleType.FUNDING_RATE) for p in pairs]
         inf.append((self._btc_pair(), self.timeframe))
@@ -186,6 +190,7 @@ class SessionLiquidityStack(IStrategy):
         pair = metadata["pair"]
         tf_min = timeframe_to_minutes(self.timeframe)
         df1h = self.dp.get_pair_dataframe(pair, self.informative_timeframe)
+        df4h = self.dp.get_pair_dataframe(pair, self.trend_timeframe)
         funding = None
         if self._is_futures():
             funding = self.dp.get_pair_dataframe(
@@ -194,11 +199,36 @@ class SessionLiquidityStack(IStrategy):
         btc = None
         if pair != self._btc_pair():
             btc = self.dp.get_pair_dataframe(self._btc_pair(), self.timeframe)
-        return build_features(dataframe, tf_min, df1h, funding, btc, self.sls_params)
+        feats = build_features(dataframe, tf_min, df1h, funding, btc, self.sls_params, df4h=df4h)
+        sig = compute_signals(feats, self.sls_params, is_btc=pair == self._btc_pair())
+        # Signals are computed here and stored in private columns, so populate_entry_trend is
+        # a pure mapping. freqtrade re-runs entry logic on its own output (lookahead-analysis,
+        # cached backtests), which therefore stays idempotent even though the intermediate
+        # features are dropped to keep multi-year 5m backtests within memory.
+        sig = sig.rename(columns={"enter_long": "_sig_long", "enter_short": "_sig_short"})
+        sig = sig.rename(columns={"enter_tag": "_sig_tag"})
+        keep = [c for c in self.KEEP_COLUMNS if c in sig.columns] + [
+            c for c in self._plot_columns() if c in sig.columns
+        ]
+        return sig[list(dict.fromkeys(keep))]
 
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        is_btc = metadata["pair"] == self._btc_pair()
-        return compute_signals(dataframe, self.sls_params, is_btc=is_btc)
+        dataframe["enter_long"] = dataframe["_sig_long"]
+        dataframe["enter_short"] = dataframe["_sig_short"]
+        dataframe["enter_tag"] = dataframe["_sig_tag"]
+        return dataframe
+
+    KEEP_COLUMNS = (
+        "date", "open", "high", "low", "close", "volume",
+        "_sig_long", "_sig_short", "_sig_tag",
+        "sig_stop", "sig_target", "sig_deadline", "sig_trail",
+    )  # fmt: skip
+
+    def _plot_columns(self) -> list[str]:
+        cols = list(self.plot_config.get("main_plot", {}))
+        for sub in self.plot_config.get("subplots", {}).values():
+            cols += list(sub)
+        return cols
 
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         dataframe["exit_long"] = 0
@@ -226,11 +256,12 @@ class SessionLiquidityStack(IStrategy):
         row = self._signal_row(pair, signal_date)
         side = -1 if trade.is_short else 1
         p = self.sls_params
-        stop = target = deadline = None
+        stop = target = deadline = trail = None
         if row is not None:
             stop = row.get("sig_stop")
             target = row.get("sig_target")
             deadline = row.get("sig_deadline")
+            trail = row.get("sig_trail")
         # Fallbacks: a missing or wrong-side stop (gap through the level) gets the widest
         # allowed stop; a missing deadline gets 4h.
         if stop is None or not math.isfinite(stop) or side * (trade.open_rate - stop) <= 0:
@@ -246,9 +277,21 @@ class SessionLiquidityStack(IStrategy):
             "target": None if target is None else float(target),
             "deadline": float(deadline),
             "risk": abs(trade.open_rate - float(stop)),
+            "trail": float(trail) if trail is not None and math.isfinite(trail) else None,
         }
         trade.set_custom_data("plan", plan)
         return plan
+
+    def _extreme_since_entry(self, pair: str, trade: Trade) -> float | None:
+        """Highest high (long) / lowest low (short) of completed candles since entry."""
+        df, _ = self.dp.get_analyzed_dataframe(pair, self.timeframe)
+        if df is None or df.empty:
+            return None
+        start = df["date"].searchsorted(pd.Timestamp(trade.open_date_utc))
+        part = df.iloc[start:]
+        if part.empty:
+            return None
+        return float(part["low"].min() if trade.is_short else part["high"].max())
 
     # ------------------------------------------------------------------------
     # Callbacks
@@ -266,7 +309,15 @@ class SessionLiquidityStack(IStrategy):
         plan = self._plan(pair, trade)
         stop = plan["stop"]
         fee_pad = 2 * (trade.fee_open or 0.0005)
-        if plan["risk"] > 0 and self.breakeven_at_r > 0:
+        trail = plan.get("trail")
+        if trail:
+            # Chandelier stop: best price since entry minus the frozen trailing distance.
+            # Uses COMPLETED candles only (not trade.max_rate, which in backtesting already
+            # includes the high of the candle being evaluated -> optimistic stops).
+            best = self._extreme_since_entry(pair, trade)
+            if best is not None:
+                stop = min(stop, best + trail) if trade.is_short else max(stop, best - trail)
+        elif plan["risk"] > 0 and self.breakeven_at_r > 0:
             move = self.breakeven_at_r * plan["risk"]
             if not trade.is_short and (trade.max_rate or 0) >= trade.open_rate + move:
                 stop = max(stop, trade.open_rate * (1 + fee_pad))
@@ -383,7 +434,47 @@ class SLS_NYORB(SessionLiquidityStack):
     modules = ("ny_orb",)
 
 
+class SLS_LateMom(SessionLiquidityStack):
+    modules = ("late_mom",)
+
+
+class SLS_WkndVwap(SessionLiquidityStack):
+    modules = ("wknd_vwap",)
+
+
+class SLS_FundWindow(SessionLiquidityStack):
+    modules = ("fund_window",)
+
+
+class SLS_PWSweep(SessionLiquidityStack):
+    modules = ("pw_sweep",)
+
+
+class SLS_EqSweep(SessionLiquidityStack):
+    modules = ("eq_sweep",)
+
+
+class SLS_LiqCascade(SessionLiquidityStack):
+    modules = ("liq_cascade",)
+
+
+class SLS_AsiaSqueeze(SessionLiquidityStack):
+    modules = ("asia_squeeze",)
+
+
+class SLS_TodSeason(SessionLiquidityStack):
+    modules = ("tod_season",)
+
+
+class SLS_CmeGap(SessionLiquidityStack):
+    modules = ("cme_gap",)
+
+
+class SLS_Trend4h(SessionLiquidityStack):
+    modules = ("trend_4h",)
+
+
 class SLS_Research(SessionLiquidityStack):
-    """All six modules, including the research-gated ones. For research, not for trading."""
+    """Every module, including the research-gated ones. For research, not for trading."""
 
     modules = ALL_MODULES

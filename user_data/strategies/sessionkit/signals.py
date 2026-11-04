@@ -22,17 +22,23 @@ from sessionkit.features import (
     UTC,
     anchored_vwap,
     atr,
+    cme_weekend_anchor,
     detect_sweep,
     efficiency_ratio,
+    equal_levels,
     first_breakout,
     funding_features,
+    hourly_seasonality,
+    htf_trend,
     in_window,
     local_day,
     merge_asof_backward,
     opening_range,
     prior_day_levels,
+    prior_week_levels,
     realized_vol,
     rel_volume_tod,
+    return_z,
     rolling_pct_rank,
     session_flags,
     session_range,
@@ -41,7 +47,17 @@ from sessionkit.features import (
 
 CORE_MODULES = ("asia_sweep", "pd_sweep", "ny_orb")
 RESEARCH_MODULES = ("late_mom", "wknd_vwap", "fund_window")
-ALL_MODULES = CORE_MODULES + RESEARCH_MODULES
+# second wave: liquidity / session-timing / trend families
+NEW_MODULES = (
+    "pw_sweep",
+    "eq_sweep",
+    "liq_cascade",
+    "asia_squeeze",
+    "tod_season",
+    "cme_gap",
+    "trend_4h",
+)
+ALL_MODULES = CORE_MODULES + RESEARCH_MODULES + NEW_MODULES
 
 
 @dataclass
@@ -84,6 +100,43 @@ class Params:
     # --- fund_window (research) -------------------------------------------------
     fw_pct_extreme: float = 0.9
     fw_stop_atr1h: float = 1.0
+    # --- pw_sweep ---------------------------------------------------------------
+    pw_rvol_min: float = 1.5
+    pw_rr_cap: float = 2.0
+    pw_min_rr: float = 1.0
+    pw_max_hold_h: float = 24.0
+    # --- eq_sweep ---------------------------------------------------------------
+    eq_swing_k: int = 3
+    eq_lookback: int = 288
+    eq_tol_atr: float = 0.1
+    eq_rvol_min: float = 1.5
+    eq_rr: float = 1.5
+    eq_max_hold_h: float = 4.0
+    # --- liq_cascade ------------------------------------------------------------
+    lc_z: float = 4.0
+    lc_rvol_min: float = 4.0
+    lc_wick_min: float = 0.4
+    lc_er_pct_max: float = 0.9
+    lc_stop_atr1h: float = 1.0
+    lc_rr: float = 1.5
+    lc_max_hold_h: float = 2.0
+    # --- asia_squeeze -----------------------------------------------------------
+    sq_width_ratio_max: float = 0.7
+    sq_rv_pct_max: float = 0.3
+    sq_rvol_min: float = 1.5
+    sq_rr: float = 2.0
+    # --- tod_season -------------------------------------------------------------
+    ts_t_min: float = 2.5
+    ts_stop_atr1h: float = 1.5
+    # --- cme_gap ----------------------------------------------------------------
+    cg_gap_atr1d: float = 1.0
+    cg_stop_atr1h: float = 1.0
+    # --- trend_4h ---------------------------------------------------------------
+    tr_er_pct_min: float = 0.5
+    tr_rvol_min: float = 1.2
+    tr_trail_atr4h: float = 3.0
+    tr_max_stop_pct: float = 0.08
+    tr_max_hold_d: float = 10.0
     enabled: dict = field(default_factory=lambda: {m: (m in CORE_MODULES) for m in ALL_MODULES})
 
 
@@ -108,6 +161,7 @@ def build_features(
     funding: pd.DataFrame | None = None,
     btc: pd.DataFrame | None = None,
     p: Params | None = None,
+    df4h: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     """Add every feature the modules need. ``df`` is the 5m frame of the traded pair."""
     from freqtrade.strategy import merge_informative_pair
@@ -172,6 +226,31 @@ def build_features(
     else:
         df["btc_z"] = np.nan
 
+    # --- second-wave features ------------------------------------------------
+    df["ret_z"] = return_z(df["close"])
+    rng = (df["high"] - df["low"]).replace(0, np.nan)
+    df["upper_wick"] = (df["high"] - np.maximum(df["open"], df["close"])) / rng
+    df["lower_wick"] = (np.minimum(df["open"], df["close"]) - df["low"]) / rng
+    eq = equal_levels(df, df["atr"], p.eq_swing_k, p.eq_lookback, p.eq_tol_atr)
+    df = pd.concat([df, eq], axis=1)
+    df = pd.concat([df, cme_weekend_anchor(df)], axis=1)
+
+    if df1h is not None and not df1h.empty:
+        df = pd.concat([df, prior_week_levels(df, df1h)], axis=1)
+        df = pd.concat([df, hourly_seasonality(df, df1h)], axis=1)
+    else:
+        for col in ("pwh", "pwl", "pw_mid", "season_mean", "season_t"):
+            df[col] = np.nan
+        df["week_key"] = df["utc_day"]
+
+    if df4h is not None and not df4h.empty:
+        df = merge_informative_pair(
+            df, htf_trend(df4h, atr_len=p.atr_len), f"{tf_minutes}m", "4h", ffill=True
+        )
+    else:
+        for col in ("dc_high_4h", "dc_low_4h", "ema_4h", "atr_4h", "er_pct_4h"):
+            df[col] = np.nan
+
     df["tf_min"] = tf_minutes
     return df
 
@@ -204,17 +283,25 @@ def _empty(df: pd.DataFrame) -> pd.DataFrame:
     out["target_long"] = np.nan
     out["target_short"] = np.nan
     out["deadline"] = np.nan
+    out["trail"] = np.nan
     return out
 
 
-def _risk_filter(df: pd.DataFrame, out: pd.DataFrame, p: Params) -> pd.DataFrame:
+def _risk_filter(
+    df: pd.DataFrame, out: pd.DataFrame, p: Params, max_stop_pct: float | None = None
+) -> pd.DataFrame:
     """Drop setups whose stop distance is outside [min_stop_pct, max_stop_pct]."""
+    hi = p.max_stop_pct if max_stop_pct is None else max_stop_pct
     c = df["close"]
     dl = (c - out["stop_long"]) / c
     ds = (out["stop_short"] - c) / c
-    out["long"] &= dl.between(p.min_stop_pct, p.max_stop_pct)
-    out["short"] &= ds.between(p.min_stop_pct, p.max_stop_pct)
+    out["long"] &= dl.between(p.min_stop_pct, hi)
+    out["short"] &= ds.between(p.min_stop_pct, hi)
     return out
+
+
+def _entry_time(df: pd.DataFrame) -> pd.Series:
+    return df["date"] + pd.Timedelta(minutes=int(df["tf_min"].iloc[0]))
 
 
 def _btc_ok(df: pd.DataFrame, p: Params, is_btc: bool) -> tuple[pd.Series, pd.Series]:
@@ -384,6 +471,155 @@ def fund_window(df: pd.DataFrame, p: Params, is_btc: bool = False) -> pd.DataFra
     return _risk_filter(df, out, p)
 
 
+# ---------------------------------------------------------------------------
+# Second wave: liquidity family
+# ---------------------------------------------------------------------------
+def pw_sweep(df: pd.DataFrame, p: Params, is_btc: bool = False) -> pd.DataFrame:
+    """Prior-WEEK high/low sweep + reclaim: the biggest obvious stop pools of the week."""
+    out = _empty(df)
+    sw = detect_sweep(df, df["pwh"], df["pwl"], df["atr"], df["week_key"])
+    base = (df["rvol_max3"] >= p.pw_rvol_min) & _mr_regime(df, p) & _vol_ok(df, p)
+    long_ok, short_ok = _btc_ok(df, p, is_btc)
+    c = df["close"]
+    out["stop_long"] = sw["sweep_ext_low"] - p.stop_buffer_atr * df["atr"]
+    out["stop_short"] = sw["sweep_ext_high"] + p.stop_buffer_atr * df["atr"]
+    risk_l = c - out["stop_long"]
+    risk_s = out["stop_short"] - c
+    # target: prior-week midpoint, but never further than pw_rr_cap R
+    out["target_long"] = np.minimum(df["pw_mid"], c + p.pw_rr_cap * risk_l)
+    out["target_short"] = np.maximum(df["pw_mid"], c - p.pw_rr_cap * risk_s)
+    rr_l = (out["target_long"] - c) / risk_l
+    rr_s = (c - out["target_short"]) / risk_s
+    out["long"] = base & sw["sweep_long"] & long_ok & (rr_l >= p.pw_min_rr)
+    out["short"] = base & sw["sweep_short"] & short_ok & (rr_s >= p.pw_min_rr)
+    out["deadline"] = _epoch(_entry_time(df) + pd.Timedelta(hours=p.pw_max_hold_h))
+    return _risk_filter(df, out, p)
+
+
+def eq_sweep(df: pd.DataFrame, p: Params, is_btc: bool = False) -> pd.DataFrame:
+    """Sweep + reclaim of an equal-highs / equal-lows cluster (resting stop pool)."""
+    out = _empty(df)
+    nan = pd.Series(np.nan, index=df.index)
+    key_h = df["eqh_id"].fillna(-1)
+    key_l = df["eql_id"].fillna(-1)
+    sh = detect_sweep(df, df["eqh"], nan, df["atr"], key_h)
+    sl = detect_sweep(df, nan, df["eql"], df["atr"], key_l)
+    base = (df["rvol_max3"] >= p.eq_rvol_min) & _mr_regime(df, p) & _vol_ok(df, p)
+    long_ok, short_ok = _btc_ok(df, p, is_btc)
+    c = df["close"]
+    out["stop_long"] = sl["sweep_ext_low"] - p.stop_buffer_atr * df["atr"]
+    out["stop_short"] = sh["sweep_ext_high"] + p.stop_buffer_atr * df["atr"]
+    out["target_long"] = c + p.eq_rr * (c - out["stop_long"])
+    out["target_short"] = c - p.eq_rr * (out["stop_short"] - c)
+    out["long"] = base & sl["sweep_long"] & long_ok
+    out["short"] = base & sh["sweep_short"] & short_ok
+    out["deadline"] = _epoch(_entry_time(df) + pd.Timedelta(hours=p.eq_max_hold_h))
+    return _risk_filter(df, out, p)
+
+
+def liq_cascade(df: pd.DataFrame, p: Params, is_btc: bool = False) -> pd.DataFrame:
+    """Fade a liquidation-cascade candle: extreme return, extreme volume, long rejection wick."""
+    out = _empty(df)
+    base = (df["rvol"] >= p.lc_rvol_min) & ~(df["er_pct_1h"] > p.lc_er_pct_max)
+    c = df["close"]
+    out["stop_long"] = df["low"] - p.lc_stop_atr1h * df["atr_1h"]
+    out["stop_short"] = df["high"] + p.lc_stop_atr1h * df["atr_1h"]
+    rr_l = c + p.lc_rr * (c - out["stop_long"])
+    rr_s = c - p.lc_rr * (out["stop_short"] - c)
+    vw = df["vwap_day"]
+    out["target_long"] = np.where(vw > c, np.minimum(vw, rr_l), rr_l)
+    out["target_short"] = np.where(vw < c, np.maximum(vw, rr_s), rr_s)
+    out["long"] = base & (df["ret_z"] <= -p.lc_z) & (df["lower_wick"] >= p.lc_wick_min)
+    out["short"] = base & (df["ret_z"] >= p.lc_z) & (df["upper_wick"] >= p.lc_wick_min)
+    out["deadline"] = _epoch(_entry_time(df) + pd.Timedelta(hours=p.lc_max_hold_h))
+    return _risk_filter(df, out, p)
+
+
+# ---------------------------------------------------------------------------
+# Second wave: volatility / session timing
+# ---------------------------------------------------------------------------
+def asia_squeeze(df: pd.DataFrame, p: Params, is_btc: bool = False) -> pd.DataFrame:
+    """Compressed Asia range -> first decisive close outside it in London / NY-AM (momentum)."""
+    out = _empty(df)
+    bo = first_breakout(df["close"], df["asia_high"], df["asia_low"], df["utc_day"])
+    window = (df["sess_london"] | df["sess_ny_am"]) & ~df["is_weekend"]
+    base = (
+        window
+        & (df["asia_width_ratio"] <= p.sq_width_ratio_max)
+        & (df["rv_pct_1h"] <= p.sq_rv_pct_max)
+        & (df["rvol"] >= p.sq_rvol_min)
+    )
+    long_ok, short_ok = _btc_ok(df, p, is_btc)
+    c = df["close"]
+    out["stop_long"] = df["asia_mid"]
+    out["stop_short"] = df["asia_mid"]
+    out["target_long"] = c + p.sq_rr * (c - out["stop_long"])
+    out["target_short"] = c - p.sq_rr * (out["stop_short"] - c)
+    out["long"] = base & bo["breakout_up"] & long_ok
+    out["short"] = base & bo["breakout_down"] & short_ok
+    out["deadline"] = _epoch(_ny_time_today(df, "16:00"))
+    return _risk_filter(df, out, p)
+
+
+def tod_season(df: pd.DataFrame, p: Params, is_btc: bool = False) -> pd.DataFrame:
+    """Walk-forward hour-of-day seasonality (weekday / weekend buckets), one-hour holds."""
+    out = _empty(df)
+    tf = int(df["tf_min"].iloc[0])
+    t = df["season_t"]
+    base = t.notna() & _vol_ok(df, p)
+    c = df["close"]
+    out["stop_long"] = c - p.ts_stop_atr1h * df["atr_1h"]
+    out["stop_short"] = c + p.ts_stop_atr1h * df["atr_1h"]
+    out["long"] = base & (t >= p.ts_t_min)
+    out["short"] = base & (t <= -p.ts_t_min)
+    out["deadline"] = _epoch(df["date"] + pd.Timedelta(minutes=tf + 60))
+    return _risk_filter(df, out, p)
+
+
+def cme_gap(df: pd.DataFrame, p: Params, is_btc: bool = False) -> pd.DataFrame:
+    """At the CME reopen, fade the weekend move back toward the Friday CME-close price."""
+    out = _empty(df)
+    atr_1d = df["atr_1h"] * np.sqrt(24)
+    gap = df["close"] - df["cme_fri_close"]
+    base = df["cme_reopen"] & (gap.abs() >= p.cg_gap_atr1d * atr_1d)
+    c = df["close"]
+    out["stop_long"] = c - p.cg_stop_atr1h * df["atr_1h"]
+    out["stop_short"] = c + p.cg_stop_atr1h * df["atr_1h"]
+    out["target_long"] = df["cme_fri_close"]
+    out["target_short"] = df["cme_fri_close"]
+    out["long"] = base & (gap < 0)
+    out["short"] = base & (gap > 0)
+    # hold until Tuesday 00:00 UTC (the reopen candle is on Sunday UTC)
+    out["deadline"] = _epoch(df["date"].dt.floor("D") + pd.Timedelta(days=2))
+    return _risk_filter(df, out, p)
+
+
+# ---------------------------------------------------------------------------
+# Second wave: trend with liquid-hours entry
+# ---------------------------------------------------------------------------
+def trend_4h(df: pd.DataFrame, p: Params, is_btc: bool = False) -> pd.DataFrame:
+    """
+    4h Donchian breakout in the direction of the 4h EMA200, entered only on a 5m close
+    during London / NY-AM with real volume, and managed with a 3x 4h-ATR chandelier stop.
+    """
+    out = _empty(df)
+    c = df["close"]
+    window = (df["sess_london"] | df["sess_ny_am"]) & ~df["is_weekend"]
+    trending = df["er_pct_4h"] >= p.tr_er_pct_min
+    base = window & trending & (df["rvol"] >= p.tr_rvol_min) & _vol_ok(df, p)
+    up = (c > df["dc_high_4h"]) & ~(c.shift(1) > df["dc_high_4h"].shift(1))
+    dn = (c < df["dc_low_4h"]) & ~(c.shift(1) < df["dc_low_4h"].shift(1))
+    long_ok, short_ok = _btc_ok(df, p, is_btc)
+    trail = p.tr_trail_atr4h * df["atr_4h"]
+    out["stop_long"] = c - trail
+    out["stop_short"] = c + trail
+    out["trail"] = trail
+    out["long"] = base & up & (c > df["ema_4h"]) & long_ok
+    out["short"] = base & dn & (c < df["ema_4h"]) & short_ok
+    out["deadline"] = _epoch(_entry_time(df) + pd.Timedelta(days=p.tr_max_hold_d))
+    return _risk_filter(df, out, p, max_stop_pct=p.tr_max_stop_pct)
+
+
 MODULE_FUNCS = {
     "asia_sweep": asia_sweep,
     "pd_sweep": pd_sweep,
@@ -391,6 +627,13 @@ MODULE_FUNCS = {
     "late_mom": late_mom,
     "wknd_vwap": wknd_vwap,
     "fund_window": fund_window,
+    "pw_sweep": pw_sweep,
+    "eq_sweep": eq_sweep,
+    "liq_cascade": liq_cascade,
+    "asia_squeeze": asia_squeeze,
+    "tod_season": tod_season,
+    "cme_gap": cme_gap,
+    "trend_4h": trend_4h,
 }
 
 
@@ -398,8 +641,9 @@ def compute_signals(df: pd.DataFrame, p: Params, is_btc: bool = False) -> pd.Dat
     """
     Run every enabled module and combine them into freqtrade columns:
     ``enter_long``, ``enter_short``, ``enter_tag``, ``sig_stop``, ``sig_target``,
-    ``sig_deadline``. Earlier modules in ``ALL_MODULES`` win ties; a candle that has
-    both a long and a short setup is skipped.
+    ``sig_deadline``, ``sig_trail`` (trailing distance in price, NaN = fixed stop).
+    Earlier modules in ``ALL_MODULES`` win ties; a candle that has both a long and a
+    short setup is skipped.
     """
     df = df.copy()
     df["enter_long"] = 0
@@ -408,6 +652,7 @@ def compute_signals(df: pd.DataFrame, p: Params, is_btc: bool = False) -> pd.Dat
     df["sig_stop"] = np.nan
     df["sig_target"] = np.nan
     df["sig_deadline"] = np.nan
+    df["sig_trail"] = np.nan
     taken = pd.Series(False, index=df.index)
     for name in ALL_MODULES:
         if not p.enabled.get(name, False):
@@ -421,5 +666,6 @@ def compute_signals(df: pd.DataFrame, p: Params, is_btc: bool = False) -> pd.Dat
             df.loc[sel, "sig_stop"] = m.loc[sel, f"stop_{side}"]
             df.loc[sel, "sig_target"] = m.loc[sel, f"target_{side}"]
             df.loc[sel, "sig_deadline"] = m.loc[sel, "deadline"]
+            df.loc[sel, "sig_trail"] = m.loc[sel, "trail"]
             taken |= sel
     return df

@@ -33,7 +33,15 @@ from freqtrade.optimize.backtesting import Backtesting  # noqa: E402
 from tests.conftest import EXMS, get_args, get_markets, patch_exchange  # noqa: E402
 
 
-STRATEGIES = ["SessionLiquidityStack", "SLS_AsiaSweep", "SLS_PDSweep", "SLS_NYORB", "SLS_Research"]
+STRATEGIES = [
+    "SessionLiquidityStack",
+    "SLS_AsiaSweep",
+    "SLS_PDSweep",
+    "SLS_NYORB",
+    "SLS_EqSweep",
+    "SLS_Trend4h",
+    "SLS_Research",
+]
 
 
 def _markets() -> dict:
@@ -95,7 +103,7 @@ def test_smoke_backtest_all_variants(mocker, datadir, tmp_path):
     assert len(trades) > 20
     assert {t["pair"] for t in trades} == set(PAIRS)
     tags = {t["enter_tag"] for t in trades}
-    assert {"late_mom", "wknd_vwap", "fund_window"} <= tags
+    assert {"late_mom", "wknd_vwap", "fund_window", "eq_sweep", "trend_4h"} <= tags
     exits = {t["exit_reason"] for t in trades}
     assert "time_stop" in exits
     assert exits & {"stop_loss", "trailing_stop_loss", "roi"}
@@ -108,8 +116,23 @@ def test_smoke_backtest_all_variants(mocker, datadir, tmp_path):
         ("SLS_AsiaSweep", "asia_sweep"),
         ("SLS_PDSweep", "pd_sweep"),
         ("SLS_NYORB", "ny_orb"),
+        ("SLS_EqSweep", "eq_sweep"),
+        ("SLS_Trend4h", "trend_4h"),
     ):
         assert {t["enter_tag"] for t in res[strat]["trades"]} <= {tag}
+
+    # trend module: chandelier trailing stop, multi-day holds, no fixed target
+    trend = res["SLS_Trend4h"]["trades"]
+    assert trend
+    assert {t["exit_reason"] for t in trend} <= {
+        "trailing_stop_loss",
+        "stop_loss",
+        "time_stop",
+        "force_exit",
+    }
+    # the chandelier stop must actually trail: some exit loses far less than the 0.5% budget
+    # (synthetic data has no trend edge, so profitability is not asserted)
+    assert any(t["profit_abs"] > -0.3 * 10000 * 0.005 for t in trend)
 
 
 def test_risk_sizing_caps_loss_per_trade(mocker, datadir, tmp_path):
