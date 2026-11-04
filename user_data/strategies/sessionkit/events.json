@@ -1,0 +1,4 @@
+{
+  "_comment": "Scheduled macro releases (UTC, ISO-8601). Entries are blocked 30 min before to 60 min after. Example: \"2026-12-09T19:00:00Z\" for an FOMC decision.",
+  "events": []
+}

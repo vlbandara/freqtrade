@@ -12,6 +12,12 @@ user_data/*
 user_data/freqaimodels/*
 user_data/models/*
 user_data/notebooks/*
+# Session & Liquidity strategy set (tracked)
+!user_data/strategies/
+!user_data/research/
+user_data/research/out/
+!user_data/tests/
+!user_data/config_sls_futures.json
 freqtrade-plot.html
 freqtrade-profit-plot.html
 freqtrade/rpc/api_server/ui/*

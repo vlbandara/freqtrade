@@ -300,6 +300,9 @@ max-complexity = 12
 "freqtrade/freqai/**/*.py" = [
   "S311",  # Standard pseudo-random generators are not suitable for cryptographic purposes
 ]
+"user_data/tests/**.py" = [
+  "S101",  # allow assert in tests
+]
 "tests/**.py" = [
   "S101",  # allow assert in tests
   "S104",  #  Possible binding to all interfaces
